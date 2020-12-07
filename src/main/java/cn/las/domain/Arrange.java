@@ -43,4 +43,8 @@ public class Arrange {
     private Laboratory laboratory;
 
     private Course course;
+
+    private String classes;
+
+    private List<String> classInfo;
 }

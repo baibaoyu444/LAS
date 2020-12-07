@@ -8,7 +8,7 @@ import java.util.List;
 public interface ArrangeMapper {
     List<Arrange> selectAll(@Param("userId") int userId)throws Exception;
 
-    void deleteById(@Param("courseId") int courseId)throws Exception;
+    void deleteById(@Param("scourseId") int courseId)throws Exception;
 
     void updateArrangeById(@Param("courseId") int courseId)throws Exception;
 

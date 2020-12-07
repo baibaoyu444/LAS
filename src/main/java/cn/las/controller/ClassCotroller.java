@@ -20,6 +20,18 @@ import java.util.Map;
 @Controller
 @RequestMapping("class")
 @Api(tags = "班级接口")
+/**
+ *
+ *
+ *
+ *
+ * 这个接口目前是废弃的，还在等待发掘
+ *
+ *
+ *
+ *
+ *
+ */
 public class ClassCotroller {
 
     @Autowired

@@ -3,6 +3,8 @@ package cn.las.domain;
 import lombok.Data;
 import lombok.ToString;
 
+import java.util.List;
+
 @Data
 @ToString
 public class Laboratory {
@@ -18,4 +20,8 @@ public class Laboratory {
     private String location;
 
     private int status;
+
+    private String limitpro;
+
+    private List<String> limits;
 }
