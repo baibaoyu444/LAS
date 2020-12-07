@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--
+        加载controller类，配置不使用默认的过滤器
+        扫描带有Controller注解的类，这些就是controller层
+    -->
+    <context:component-scan base-package="cn.las.controller" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!--  进行swagger的配置  -->
+    <!-- 向容器自动注入配置 -->
+    <context:annotation-config/>
+    <!-- 将SwaggerConfig配置类注入 -->
+    <bean class="cn.las.config.SwaggerConfig"/>
+    <!-- 配置swagger资源不被拦截 -->
+    <mvc:resources location="classpath:/META-INF/resources/" mapping="swagger-ui.html"/>
+    <mvc:resources location="classpath:/META-INF/resources/webjars/" mapping="/webjars/**"/>
+
+
+    <bean class="com.fasterxml.classmate.TypeResolver" id="typeResolver"></bean>
+
+    <!--
+        自定义视图解析器，指定页面的显示位置
+        本项目没有使用，因为使用的是json格式传输数据
+    -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!-- 设置视图解析器的前缀和后缀  -->
+        <property name="prefix" value="/pages/"></property>
+        <property name="suffix" value=".jsp"></property>
+        <property name="contentType" value="text/html;charset=UTF-8"/>
+    </bean>
+
+    <!--  配置静态资源  -->
+    <mvc:resources mapping="/js/**" location="/js/"></mvc:resources>
+    <mvc:resources mapping="/html/**" location="/html/"></mvc:resources>
+    <mvc:resources mapping="/css/**" location="/css/"></mvc:resources>
+    <mvc:resources mapping="/images/**" location="/img/"></mvc:resources>
+
+    <!--  设置mvc注解驱动   -->
+    <mvc:annotation-driven></mvc:annotation-driven>
+
+    <mvc:default-servlet-handler></mvc:default-servlet-handler>
+
+    <!--  json乱码处理器   -->
+    <mvc:annotation-driven>
+        <mvc:message-converters register-defaults="true">
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <constructor-arg value="UTF-8"></constructor-arg>
+            </bean>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper">
+                    <bean class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
+                        <property name="failOnEmptyBeans" value="false"></property>
+                    </bean>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!--  配置切面自动代理  -->
+    <aop:aspectj-autoproxy proxy-target-class="true"></aop:aspectj-autoproxy>
+</beans>

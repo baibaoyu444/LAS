@@ -1,0 +1,251 @@
+package cn.las.controller;
+
+import cn.las.domain.Message;
+import cn.las.domain.User;
+import cn.las.service.RoleService;
+import cn.las.service.UserService;
+import cn.las.utils.AESUtil;
+import cn.las.utils.MD5Utils;
+import io.swagger.annotations.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @爱出bug的代码小白
+ *
+ *　　┏┓　　　┏┓+ +
+ *　┏┛┻━━━┛┻┓ + +
+ *　┃　　　　　　　┃ 　
+ *　┃　　　━　　　┃ ++ + + +
+ * ████━████ ┃+
+ *　┃　　　　　　　┃ +
+ *　┃　　　┻　　　┃
+ *　┃　　　　　　　┃ + +
+ *　┗━┓　　　┏━┛
+ *　　　┃　　　┃　　　　　　　　　　　
+ *　　　┃　　　┃ + + + +
+ *　　　┃　　　┃
+ *　　　┃　　　┃ +  神兽保佑
+ *　　　┃　　　┃    代码无bug　　
+ *　　　┃　　　┃　　+　　　　　　　　　
+ *　　　┃　 　　┗━━━┓ + +
+ *　　　┃ 　　　　　　　┣┓
+ *　　　┃ 　　　　　　　┏┛
+ *　　　┗┓┓┏━┳┓┏┛ + + + +
+ *　　　　┃┫┫　┃┫┫
+ *　　　　┗┻┛　┗┻┛+ + + +
+ */
+
+@Controller
+@RequestMapping("user")
+@Api(tags = "用户接口")
+public class UserController {
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    RoleService roleService;
+
+    /**
+     * @param user
+     * {
+     *     username:...,
+     *     password:...,
+     *     roleId:...
+     * }
+     * @return 返回登陆成功 | 失败信息
+     * @throws Exception
+     *
+     * 1、非空验证
+     * 2、查询用户信息是否存在
+     * 3、检验密码是否正确
+     * 4、检查用户的身份信息
+     */
+    @RequestMapping(value = "login", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperation(
+            httpMethod = "POST",
+            notes = "登录功能接口</br>"+
+                    "输入JSON数据: {\"username\":\"111\", \"password\":\"123456\",\"roleId\":1}",
+            value = "登录功能"
+    )
+    public Message login(@RequestBody User user) throws Exception {
+        // 进行用户信息查询
+        User usr = userService.findByUsername(user.getUsername());
+        if(usr == null) {
+            return  new Message(404, "用户不存在");
+        }
+
+        if(usr.getRole() == null) return new Message(403, "用户信息不存在");
+        // 进行身份信息的验证
+        if(usr.getRole().getId() != user.getRoleId()) {
+            return  new Message(405, "身份信息不正确");
+        }
+
+        // 进行密码的验证
+        String encrypt = MD5Utils.MD5Encode(user.getPassword());
+        if(!usr.getPassword().equals(encrypt)) {
+            return  new Message(403, "登录失败");
+        }
+
+        return new Message(200, "登录成功");
+    }
+
+    /**
+     * @return  返回带有所有用户信息的数据 users
+     * @throws Exception
+     */
+    @RequestMapping(value = "findAll", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(httpMethod = "GET", notes = "查询所有用户的信息", value = "查询所有用户")
+    public Message findAll() throws Exception {
+        Message message = new Message(200, "查询成功");
+        List<User> all = userService.findAll();
+        for (User user : all) {
+            user.setPassword(null);
+        }
+        message.putData("users", all);
+        return message;
+    }
+
+    /**
+     * @param user
+     * {
+     *     username:...,
+     *     password:...,
+     *     teacher:...
+     * }
+     * @return 返回操作成功 | 失败数据
+     * @throws Exception
+     *
+     * 1、非空验证
+     * 2、添加用户
+     *
+     * 当出现添加用户过程当中抛出错误的时候，进行事务回滚
+     */
+    @RequestMapping(value = "addUser", method = RequestMethod.POST)
+    @ResponseBody
+    @Transactional(rollbackFor = Exception.class)
+    @ApiOperation(
+            httpMethod = "POST",
+            notes = "增加用户功能</br>" +
+                    "输入JSON数据:{\"username\":\"111\", \"password\":\"123456\",\"teacher\":\"xxx\"}",
+            value = "添加用户"
+    )
+    public Message addUser(@RequestBody User user) throws Exception {
+        // 对密码进行加密
+        user.setPassword(MD5Utils.MD5Encode(user.getPassword()));
+
+        try {
+            // 增加用户
+            userService.addUser(user);
+
+            // 生成用户的role信息，身份信息是user
+            User usr = userService.findByUsername(user.getUsername());
+            roleService.insertUserRole(usr.getId(), 2);
+        } catch (Exception e) {
+            return new Message(403, "账户已存在");
+        }
+
+        return new Message(200, "添加用户信息成功");
+    }
+
+    /**
+     * 修改密码接口
+     *
+     * @param datas
+     * {
+     *     username:...,
+     *     new_password:...,
+     *     old_password:...
+     * }
+     * @return
+     * @throws Exception
+     *
+     * 当抛出错误的的时候进行事务回滚
+     */
+    @RequestMapping(value = "changePassword", method = RequestMethod.POST)
+    @ResponseBody
+    @Transactional(rollbackFor = Exception.class)
+    @ApiOperation(
+            httpMethod = "POST",
+            notes = "修改密码功能</br>" +
+                    "输入JSON数据:{\"account\":\"111\", \"old_password\":\"123456\",\"new_password\":\"xxx\"}",
+            value = "修改密码"
+    )
+    public Message changePassword(@RequestBody Map<String, Object> datas) throws Exception {
+        Message message = new Message();
+
+        // 获取参数
+        String oldPassword = (String) datas.get("old_password");
+        String username = (String) datas.get("account");
+        String newPassword = (String) datas.get("new_password");
+
+        if(username == null || oldPassword == null || newPassword == null) {
+            message.setCode(501);
+            message.setMessage("参数不能为空");
+            return message;
+        }
+
+        User user = userService.findByUsername(username);
+
+        // 验证当前用户是否存在
+        if(user == null) {
+            message.setCode(500);
+            message.setMessage("用户不存在");
+            return message;
+        }
+
+        String secretOldPswd = AESUtil.encrypt(oldPassword);
+        if(!secretOldPswd.equals(user.getPassword())) {
+            message.setCode(502);
+            message.setMessage("旧密码输入错误");
+            return message;
+        }
+
+        // 验证通过开始修改当前账户的密码
+        userService.changePassword(username, AESUtil.encrypt(newPassword));
+
+        message.setCode(200);
+        message.setMessage("修改密码成功");
+        return message;
+    }
+
+
+    /**
+     * 通过用户的Id删除用户
+     *
+     * @param maps 用户的参数数据
+     * @return  返回操作结果
+     * @throws Exception
+     */
+    @RequestMapping(value = "removeById", method = RequestMethod.POST)
+    @ResponseBody
+    @Transactional(rollbackFor = Exception.class)
+    @ApiOperation(
+            httpMethod = "POST",
+            notes = "删除用户功能</br>" +
+                    "输入JSON数据:{\"userId\":2}",
+            value = "删除用户"
+    )
+    public Message removeById(@RequestBody Map<String, Object> maps) {
+        Integer userId = (Integer) maps.get("userId");
+        if(userId == null) {
+            return new Message(403, "参数不能为空");
+        }
+
+        try {
+            userService.removeById(userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message(500, "删除用户信息失败");
+        }
+        return new Message(200, "删除成功!");
+    }
+}

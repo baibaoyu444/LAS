@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.las.mapper.ArrangeMapper">
+
+    <!-- 通过教学周查当前周排课情况（可能不需要，先保留）-->
+    <select id="findArrangeByweek" parameterType="java.lang.Integer" resultType="cn.las.domain.Arrange">
+        select * from arrange where week=#{week}
+    </select>
+    
+    <!-- 根据教师id找到所有课程信息 -->
+    <select id="selectAllByTeacherId" resultType="cn.las.domain.Arrange" parameterType="java.lang.Integer">
+        select * from arrange where userId=#{userId}
+    </select>
+
+    <!-- 通过课程id删掉排课 -->
+    <delete id="deleteArrangeByCourseId" parameterType="java.lang.Integer">
+        delete from arrange where id=#{id}
+    </delete>
+
+    <!-- 通过课程id修改排课 -->
+    <update id="updateArrangeByCourseId" parameterType="java.lang.Integer">
+        update arrange
+        set laboratoryId=#{laboratoryId},userId=#{userId},courseId=#{courseId},week=#{week},section=#{section},classId=#{classId}
+        where id=#{id}
+    </update>
+
+    <!-- 增加排课 -->
+    <insert id="insertone" parameterType="cn.las.domain.Arrange">
+        insert into arrange
+        (laboratoryId,userId,courseId,week,section)
+        values (#{laboratoryId},#{userId},#{courseId},#{week},#{section})
+    </insert>
+
+    <!-- 申报老师给管理员发送取消申请，管理员进行操作 -->
+
+    <!-- 根据实验室id找到当前实验室排课情况 -->
+    <select id="findArrangeByLaboratoryId" parameterType="java.lang.Integer" resultType="cn.las.domain.Arrange">
+        select * from arrange where laboratoryId=#{laboratoryId}
+    </select>
+
+    <!-- 根据课程id找到当前课程排课情况-->
+    <select id="findArrangeByCourseId" parameterType="java.lang.Integer" resultType="cn.las.domain.Arrange">
+        select * from arrange where courseId=#{courseId}
+    </select>
+
+
+</mapper>

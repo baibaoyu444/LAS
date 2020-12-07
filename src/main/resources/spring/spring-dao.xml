@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--  对数据源配置文件进行定位  -->
+    <context:property-placeholder location="classpath:dbconfig.properties"/>
+
+    <!--
+        配置阿里的Druid数据源
+        要在init-method设置init方法，才能在监控页面中查看数据源等操作
+    -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init">
+        <!--  注入连接属性  -->
+        <property name="driverClassName" value="${mysql_driver}"/>
+        <property name="url" value="${mysql_url}"/>
+        <property name="username" value="${mysql_username}"/>
+        <property name="password" value="${mysql_password}"/>
+
+<!--        <property name="driverClassName" value="${test_driver}"/>-->
+<!--        <property name="url" value="${test_url}"/>-->
+<!--        <property name="username" value="${test_username}"/>-->
+<!--        <property name="password" value="${test_password}"/>-->
+
+
+        <!--  初始化连接池大小  -->
+        <property name="initialSize" value="5"></property>
+        <!--  设置最大连接数  -->
+        <property name="maxActive" value="10"></property>
+        <!--  设置等待时间  -->
+        <property name="maxWait" value="5000"/>
+        <!--  配置数据源监控的filter  -->
+        <property name="filters" value="stat"></property>
+    </bean>
+
+    <!--  开始执行mybatis的创建流程  -->
+
+    <!-- 创建sqlSessionFactory 参数是数据源dataSource、mapper.xml映射文件、mybatis-config.xml配置文件-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"></property>
+        <property name="configLocation" value="classpath:mybatis-config.xml"></property>
+
+        <!--  配置pageHelper分页插件 -->
+        <property name= "plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <property name="properties">
+                        <!--使用下面的方式配置参数，一行配置一个-->
+                        <props>
+                            <!--  插件自动检测数据库的链接，自动选择合适的分页方式  -->
+                            <prop key="helperDialect">mysql</prop>
+                            <!--  不管前端的操作是否越界，后台永远不会越界  -->
+                            <prop key="reasonable">true</prop>
+                        </props>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+    <!-- 创建sqlsession实例  -->
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"></constructor-arg>
+        <constructor-arg name="executorType" value="BATCH"></constructor-arg>
+    </bean>
+
+    <!-- 配置扫描包，加载mapper代理对象 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="cn.las.dao,cn.las.mapper"></property>
+    </bean>
+
+</beans>
