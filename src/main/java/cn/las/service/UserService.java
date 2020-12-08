@@ -19,4 +19,6 @@ public interface UserService {
     User findUserInfoById(Integer id) throws Exception;
 
     void removeById(Integer userId) throws Exception;
+
+    void updateOne(User user) throws Exception;
 }

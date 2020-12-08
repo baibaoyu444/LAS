@@ -72,7 +72,7 @@ public class CourseController {
     @ApiOperation(
             httpMethod = "POST",
             notes = "新增课程接口</br>"+
-                    "输入JSON数据: {\"name\": \"数据科学导论\",\"time\": 20}",
+                    "输入JSON数据: {\"name\": \"数据科学导论\",\"time\": 20,\"score\": 2.5}",
             value = "新增课程"
     )
     public Message addCourse(@RequestBody Course course) {

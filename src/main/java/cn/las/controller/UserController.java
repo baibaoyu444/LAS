@@ -7,6 +7,7 @@ import cn.las.service.UserService;
 import cn.las.utils.AESUtil;
 import cn.las.utils.MD5Utils;
 import io.swagger.annotations.*;
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,6 +67,8 @@ public class UserController {
      * 2、查询用户信息是否存在
      * 3、检验密码是否正确
      * 4、检查用户的身份信息
+     *
+     * 测试通过-白宝玉
      */
     @RequestMapping(value = "login", method = RequestMethod.POST)
     @ResponseBody
@@ -100,6 +103,8 @@ public class UserController {
     /**
      * @return  返回带有所有用户信息的数据 users
      * @throws Exception
+     *
+     * 测试通过-白宝玉
      */
     @RequestMapping(value = "findAll", method = RequestMethod.GET)
     @ResponseBody
@@ -128,6 +133,8 @@ public class UserController {
      * 2、添加用户
      *
      * 当出现添加用户过程当中抛出错误的时候，进行事务回滚
+     *
+     * 测试通过-白宝玉
      */
     @RequestMapping(value = "addUser", method = RequestMethod.POST)
     @ResponseBody
@@ -169,6 +176,8 @@ public class UserController {
      * @throws Exception
      *
      * 当抛出错误的的时候进行事务回滚
+     *
+     * 测试通过-白宝玉
      */
     @RequestMapping(value = "changePassword", method = RequestMethod.POST)
     @ResponseBody
@@ -224,6 +233,8 @@ public class UserController {
      * @param maps 用户的参数数据
      * @return  返回操作结果
      * @throws Exception
+     *
+     * 测试通过-白宝玉
      */
     @RequestMapping(value = "removeById", method = RequestMethod.POST)
     @ResponseBody
@@ -247,5 +258,53 @@ public class UserController {
             return new Message(500, "删除用户信息失败");
         }
         return new Message(200, "删除成功!");
+    }
+
+
+    /**
+     * 按照id获取账户信息功能
+     *
+     * @param maps
+     * @return
+     * @throws Exception
+     *
+     * 测试通过-白宝玉
+     */
+    @RequestMapping(value = "findById", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(
+            httpMethod = "GET",
+            notes = "按照id查询用户功能</br>" +
+                    "输入JSON数据:{\"userId\":2}",
+            value = "查询用户BY用户id"
+    )
+    public Message findById(@RequestBody Map<String, Object> maps) throws Exception {
+        User userId = userService.findUserInfoById((Integer) maps.get("userId"));
+        Message message = new Message(200, "查询成功");
+        message.putData("user", userId);
+        return message;
+    }
+
+    /**
+     * 按照id修改用户基本信息功能
+     * @param user
+     * @return
+     * @throws Exception
+     *
+     * 测试通过-白宝玉
+     */
+    @RequestMapping(value = "/", method = RequestMethod.PUT)
+    @ResponseBody
+    @ApiOperation(
+            httpMethod = "PUT",
+            notes = "按照id查询用户功能</br>" +
+                    "输入JSON数据:{\"userId\":2,\"username\":\"111\", \"teacher\":\"xxx\", \"email\":\"xxx\", \"phone\":\"xxx\"}",
+            value = "查询用户BY用户id"
+    )
+    @Transactional(rollbackFor = Throwable.class)
+    public Message updateOne(@RequestBody User user) throws Exception {
+        userService.updateOne(user);
+        Message message = new Message(200, "修改成功");
+        return message;
     }
 }

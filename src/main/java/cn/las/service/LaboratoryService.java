@@ -6,11 +6,6 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface LaboratoryService {
-    void updateLaboratoryStatus(@Param("id") int id, @Param("state") Integer state)throws Exception;
-
-    void updateLaboratoryPnum(@Param("id") int id, @Param("size") Integer size)throws Exception;
-
-    void updateLaboratoryType(@Param("type") String type, @Param("id") Integer id) throws Exception;
 
     List<Laboratory> findAll() throws Exception;
 

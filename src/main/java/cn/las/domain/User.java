@@ -18,4 +18,8 @@ public class User {
     private Role role;
 
     private Integer roleId;
+
+    private String phone;
+
+    private String email;
 }
