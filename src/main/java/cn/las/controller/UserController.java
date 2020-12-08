@@ -298,7 +298,7 @@ public class UserController {
     @ApiOperation(
             httpMethod = "PUT",
             notes = "按照id查询用户功能</br>" +
-                    "输入JSON数据:{\"userId\":2}",
+                    "输入JSON数据:{\"userId\":2,\"username\":\"111\", \"teacher\":\"xxx\", \"email\":\"xxx\", \"phone\":\"xxx\"}",
             value = "查询用户BY用户id"
     )
     @Transactional(rollbackFor = Throwable.class)
