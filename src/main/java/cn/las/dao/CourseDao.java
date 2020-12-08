@@ -10,25 +10,24 @@ import java.util.List;
 
 public interface CourseDao {
 
-    @Insert("insert into course(name, time) values(#{name},#{time})")
+    @Insert("insert into course(name, time, score) values(#{name},#{time},#{score})")
     void addCourse(Course course) throws Exception;
 
-    @Select("select * from course where course.id=#{id}")
+    @Select("select * from course where id=#{id}")
     Course findCourseById(Integer id) throws Exception;
 
-    @Select("select * from course where course.name=#{courseName}")
+    @Select("select * from course where name=#{courseName}")
     Course findCourseByCourseName(String courseName) throws Exception;
 
-    @Delete("delete from course where course.id=#{id}")
+    @Delete("delete from course where id=#{id}")
     void removeCourseById(Integer id) throws Exception;
 
-    @Delete("delete from course where course.name=#{courseName}")
+    @Delete("delete from course where name=#{courseName}")
     void removeCourseByCourseName(String courseName) throws Exception;
 
     @Select("select * from course")
     List<Course> findAll() throws Exception;
 
-    @Update("update course set course.name=#{name},course.time=#{time} where course.id=#{id}")
+    @Update("update course set name=#{name},time=#{time},score=#{score} where id=#{id}")
     void updateCourse(Course course) throws Exception;
-
 }

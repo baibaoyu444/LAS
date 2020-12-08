@@ -23,23 +23,6 @@ public class LaboratoryServiceImpl implements LaboratoryService {
     ArrangeDao arrangeDao;
 
     @Override
-    public void updateLaboratoryStatus(int id, Integer state) throws Exception {
-        if(id == 0 || state == null) throw new IllegalArgumentException("参数有误");
-        laboratoryMapper.updateLaboratoryStatus(state, id);
-    }
-
-    @Override
-    public void updateLaboratoryPnum(int id, Integer size) throws Exception {
-        laboratoryMapper.updateLaboratoryPnum(size, id);
-    }
-
-    @Override
-    public void updateLaboratoryType(String type, Integer id) throws Exception {
-        if(type == null || id == null) throw new IllegalArgumentException("参数有误");
-        laboratoryMapper.updateLaboratoryType(type, id);
-    }
-
-    @Override
     public List<Laboratory> findAll() throws Exception {
         return laboratoryDao.findAll();
     }

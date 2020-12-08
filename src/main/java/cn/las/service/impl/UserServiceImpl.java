@@ -62,4 +62,9 @@ public class UserServiceImpl implements UserService {
         // 之后删除用户数据
         userDao.removeById(userId);
     }
+
+    @Override
+    public void updateOne(User user) throws Exception {
+        userDao.updateOne(user);
+    }
 }

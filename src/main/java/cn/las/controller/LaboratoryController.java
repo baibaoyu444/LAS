@@ -2,11 +2,9 @@ package cn.las.controller;
 
 import cn.las.domain.Laboratory;
 import cn.las.domain.Message;
-import cn.las.mapper.LaboratoryMapper;
 import cn.las.service.LaboratoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.swing.*;
 import java.util.List;
 import java.util.Map;
 
@@ -26,42 +23,6 @@ public class LaboratoryController {
 
     @Autowired
     LaboratoryService laboratoryService;
-
-    /**
-     * 设置实验室状态
-     *
-     * @param maps
-     * {
-     *     id:...,
-     *     status:...
-     * }
-     * @return
-     */
-    @RequestMapping(value = "updateStatus", method = RequestMethod.POST)
-    @ResponseBody
-    @ApiOperation(
-            httpMethod = "POST",
-            notes = "修改实验室状态接口</br>"+
-                    "输入JSON数据: {\"id\": 11,\"status\": 1}",
-            value = "修改实验室状态"
-    )
-    public Message updateLaboratoryState(@RequestBody Map<String, Object> maps) {
-        Message message = new Message();
-
-        // 获取参数
-        Integer id = (Integer) maps.get("id");
-        Integer status = (Integer) maps.get("status");
-
-        // 更改实验室的状态信息
-        try {
-            laboratoryService.updateLaboratoryStatus(id, status);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Message(501, e.getMessage());
-        }
-
-        return new Message(200, "实验室状态更新成功");
-    }
 
     /**
      * 增加实验室信息
@@ -77,6 +38,8 @@ public class LaboratoryController {
      * @return
      *
      * 进行实验室的添加
+     *
+     * 测试通过--白宝玉
      */
     @RequestMapping(value = "addLab", method = RequestMethod.POST)
     @ResponseBody
@@ -101,44 +64,15 @@ public class LaboratoryController {
 
 
     /**
-     * @param maps 前端传输的实验室新的类型信息
-     * {
-     *     id:...,
-     *     type:...
-     * }
-     * @return
-     */
-    @RequestMapping(value = "updateType", method = RequestMethod.POST)
-    @ResponseBody
-    @Transactional(rollbackFor = Exception.class)
-    @ApiOperation(
-            httpMethod = "POST",
-            notes = "更新实验室大小接口</br>"+
-                    "输入JSON数据: {\"id\":11,\"type\": \"xxx实验室\"}",
-            value = "更新实验室大小"
-    )
-    public Message updateLaboratoryType(@RequestBody Map<String, Object> maps) {
-        // 获取数据 + 非空验证
-        String type = (String) maps.get("type");
-        Integer id = (Integer) maps.get("id");
-
-        try {
-            laboratoryService.updateLaboratoryType(type, id);
-        } catch (Exception e) {
-            return new Message(501, e.getMessage());
-        }
-
-        // 返回操作信息
-        return new Message(200, "修改实验室类型信息成功");
-    }
-
-
-    /**
      * @param maps 删除实验室信息
      * {
      *     id:...
      * }
      * @return
+     *
+     * 通过实验室id删除实验室信息
+     *
+     * 测试通过--白宝玉
      */
     @RequestMapping(value = "deleteById", method = RequestMethod.POST)
     @ResponseBody
@@ -165,6 +99,12 @@ public class LaboratoryController {
     }
 
 
+    /**
+     * 查询全部的实验室信息
+     * @return
+     *
+     * 测试通过--白宝玉
+     */
     @RequestMapping(value = "findAll", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(
@@ -186,64 +126,6 @@ public class LaboratoryController {
         return message;
     }
 
-
-    /**
-     * 修改实验室信息
-     *
-     * @param maps 前端传输的数据
-     *          {
-     *              id:...,
-     *              size:...
-     *          }
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "updateSize", method = RequestMethod.POST)
-    @ResponseBody
-    @Transactional(rollbackFor = Exception.class)
-    @ApiOperation(
-            httpMethod = "POST",
-            notes = "更新实验室大小接口</br>"+
-                    "输入JSON数据: {\"id\":11,\"size\": 20}",
-            value = "更新实验室大小"
-    )
-    public Message updateLaboratorySize(@RequestBody Map<String, Object> maps) {
-        Message message = new Message();
-
-        // 进行非空验证
-        Integer id = (Integer) maps.get("id");
-        Integer size = (Integer) maps.get("size");
-        if (id == null || size == null) {
-            message.setCode(403);
-            message.setMessage("参数信息有误");
-            return message;
-        }
-
-        try {
-            if (laboratoryService.findById(id) == null) throw new RuntimeException("实验室不存在");
-        } catch (Exception e) {
-            e.printStackTrace();
-            message.setMessage(e.getMessage());
-            message.setCode(501);
-            return message;
-        }
-
-        // 更改实验室的状态信息
-        try {
-            laboratoryService.updateLaboratoryPnum(id, size);
-        } catch (Exception e) {
-            e.printStackTrace();
-            message.setMessage("更改实验室人数信息失败");
-            message.setCode(501);
-            return message;
-        }
-
-        message.setCode(200);
-        message.setMessage("实验室人数更新成功");
-        return message;
-    }
-
-
     /**
      * 更新实验室数据
      * {
@@ -255,6 +137,8 @@ public class LaboratoryController {
      * }
      * @param lab
      * @return
+     *
+     * 测试通过--白宝玉
      */
     @RequestMapping(value = "updateLab", method = RequestMethod.POST)
     @ResponseBody
@@ -262,7 +146,7 @@ public class LaboratoryController {
     @ApiOperation(
             httpMethod = "POST",
             notes = "更新实验室</br>"+
-                    "输入JSON数据: {\"id\":11,\"name\": \"test\",\"type\": \"test\",\"size\": 20,\"location\": \"xxx\"}",
+                    "输入JSON数据: {\"id\":11,\"name\": \"test\",\"type\": \"test\",\"size\": 20,\"location\": \"xxx\",\"status\": \"0/1\",\"limitpro\": \"课程名s\"}",
             value = "更新实验室"
     )
     public Message updateLaboratory(@RequestBody Laboratory lab) {
