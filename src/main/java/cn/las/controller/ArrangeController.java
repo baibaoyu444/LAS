@@ -23,7 +23,7 @@ import java.util.*;
  * 功能设计
  *
  * 查询模块
- * 1、查询所有排课信息 并且转换为前端容易显示的页面
+ * 1、查询所有排课信息 并且转换为前端容易显示的页面（1）
  * 2、按照一个arrange对象查询所有符合需求的排课信息  arrange对象当中可能有些属性不存在
  * 3、按照教师的id查询课程
  * 4、查询每个实验室的排课信息
@@ -94,6 +94,7 @@ public class ArrangeController {
                             arrange.getCourseId() == arr.getCourseId() &&
                             arrange.getDay() == arr.getDay() &&
                             arrange.getSection() == arr.getSection()
+                          //  arrange.getClasses().equals(arr.getClasses())
             ) {
                 arrange.getWeeks().add(arr.getWeek());
             } else {
@@ -122,16 +123,18 @@ public class ArrangeController {
 
         List<Arrange> [][] arrs = new ArrayList[6][7];
         for (Arrange arr : list) {
-            int day = arr.getDay() - 1;
-            int section = arr.getSection() - 1;
-            if(arrs[section][day] == null) {
-                arrs[section][day] = new ArrayList<Arrange>();
-                arrs[section][day].add(arr);
-                continue;
-            }
+            if (arr != null) {
+                int day = arr.getDay() - 1;
+                int section = arr.getSection() - 1;
+                if (arrs[section][day] == null) {
+                    arrs[section][day] = new ArrayList<Arrange>();
+                    arrs[section][day].add(arr);
+                    continue;
+                }
 
-            // 如果存在，直接插入
-            arrs[section][day].add(arr);
+                // 如果存在，直接插入
+                arrs[section][day].add(arr);
+            }
         }
 
         return arrs;
@@ -308,7 +311,6 @@ public class ArrangeController {
 
 
     /**
-     * @param laboratoryId 实验室id
      * @return  返回带有某实验室排课arranges的message
      * @throws Exception
      *
@@ -316,11 +318,16 @@ public class ArrangeController {
      */
     @RequestMapping(value = "findArrangeByLaboratoryId", method = RequestMethod.POST)
     @ResponseBody
-    @ApiIgnore
-    public Message findArrangeByLaboratoryId(@RequestParam int laboratoryId)throws Exception{
+    @ApiOperation(
+            httpMethod = "POST",
+            notes = "根据实验室id查看排课",
+            value = "根据实验室id查看排课"
+    )
+    public Message findArrangeByLaboratoryId(@RequestBody Map<String, Object> maps)throws Exception{
+        int id = (Integer) maps.get("laboratoryId");
         List<Arrange> all = null;
         try {
-            all = arrangeService.findArrangeByLaboratoryId(laboratoryId);
+            all = arrangeService.findArrangeByLaboratoryId(id);
         } catch (Exception e) {
             return new Message(208, "查询此实验室的排课情况失败");
         }
@@ -329,8 +336,12 @@ public class ArrangeController {
             return new Message(202, "此实验室未安排课程");
         }
 
+
+        List<Arrange> process = process(all);
+        List<Arrange>[][] courseList = getCourseList(process);
+
         Message message = new Message(200, "获取排课信息成功");
-        message.putData("ArrangeByLaboratoryId",all);
+        message.putData("ArrangeByLaboratoryId",courseList);
         return message;
     }
 

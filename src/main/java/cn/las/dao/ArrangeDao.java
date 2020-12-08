@@ -40,7 +40,8 @@ public interface ArrangeDao {
     List<Arrange> findByTeacherName(String teacherName) throws Exception;
 
     @Select("select * from arrange where laboratoryId=#{laboratoryId}")
-    List<Arrange> findByLaboratoryId(Integer laboratoryId) throws Exception;
+
+    List<Arrange> findByLaboratoryId(int laboratoryId) throws Exception;
 
     // 插入课程，确定之前已经进行了验证
     @Insert("insert into arrange " +

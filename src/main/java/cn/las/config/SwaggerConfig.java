@@ -18,7 +18,7 @@ public class SwaggerConfig {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .host("172.81.212.134:8080")
+                .host("localhost:8080")
                 .select()
                 .apis(RequestHandlerSelectors.any())
                 .build()

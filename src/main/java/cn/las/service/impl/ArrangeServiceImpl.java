@@ -39,7 +39,7 @@ public class ArrangeServiceImpl implements ArrangeService {
     }
 
     public List<Arrange> findArrangeByLaboratoryId(int laboratoryId)throws Exception{
-        return arrangeMapper.findArrangeByLaboratoryId(laboratoryId);
+        return arrangeDao.findByLaboratoryId(laboratoryId);
     }
 
     public List<Arrange> findArrangeByCourseId(int courseId)throws Exception{
