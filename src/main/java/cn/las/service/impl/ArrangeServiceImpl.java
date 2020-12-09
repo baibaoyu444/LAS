@@ -38,8 +38,8 @@ public class ArrangeServiceImpl implements ArrangeService {
         arrangeMapper.updateArrangeById(courseId);
     }
 
-    public List<Arrange> findArrangeByLaboratoryId(int laboratoryId)throws Exception{
-        return arrangeDao.findByLaboratoryId(laboratoryId);
+    public List<Arrange> findArrangeByLaboratoryId(int laboratoryId,int week)throws Exception{
+        return arrangeDao.findByLaboratoryId(laboratoryId,week);
     }
 
     public List<Arrange> findArrangeByCourseId(int courseId)throws Exception{
@@ -97,8 +97,8 @@ public class ArrangeServiceImpl implements ArrangeService {
     }
 
     @Override
-    public List<Arrange> isEnableByWeeksAndDayAndSection(List<Integer> weeks, Integer day, Integer section) throws Exception {
-        return arrangeDao.isEnableByWeeksAndDayAndSection(weeks, day, section);
+    public List<Arrange> isEnableByWeeksAndDayAndSection(List<Integer> weeks, Integer day, Integer section, String type) throws Exception {
+        return arrangeDao.isEnableByWeeksAndDayAndSection(weeks, day, section,type);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class ArrangeServiceImpl implements ArrangeService {
     }
 
     @Override
-    public List<Arrange> findArrangeByUserId(Integer userId) throws Exception {
-        return arrangeDao.findArrangeByUserId(userId);
+    public List<Arrange> findArrangeByUserId(Integer userId,Integer week) throws Exception {
+        return arrangeDao.findArrangeByUserId(userId,week);
     }
 }

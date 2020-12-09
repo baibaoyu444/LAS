@@ -4,6 +4,7 @@ import cn.las.domain.*;
 import cn.las.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -320,15 +321,19 @@ public class ArrangeController {
     @ResponseBody
     @ApiOperation(
             httpMethod = "POST",
-            notes = "根据实验室id查看排课",
-            value = "根据实验室id查看排课"
+            notes = "根据实验室id查看每周排课",
+            value = "根据实验室id查看每周排课"
     )
     public Message findArrangeByLaboratoryId(@RequestBody Map<String, Object> maps)throws Exception{
         int id = (Integer) maps.get("laboratoryId");
+        System.out.println(id);
+        int week = (Integer) maps.get("week");
+        System.out.println(week);
         List<Arrange> all = null;
         try {
-            all = arrangeService.findArrangeByLaboratoryId(id);
+            all = arrangeService.findArrangeByLaboratoryId(id,week);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return new Message(208, "查询此实验室的排课情况失败");
         }
 
@@ -408,63 +413,63 @@ public class ArrangeController {
      *
      * 测试通过--白宝玉
      */
-//    @RequestMapping(value = "selectEnableLabByTWDS", method = RequestMethod.GET)
-//    @ResponseBody
-//    @Transactional(rollbackFor = Exception.class)
-//    @ApiOperation(
-//            httpMethod = "GET",
-//            notes = "查询可用教室By类型|周数|周几|时间段</br>"+
-//                    "输入JSON数据: {</br>" +
-//                    "    \"weeks\":[1,2,3,4],</br>" +
-//                    "    \"day\":1,</br>" +
-//                    "    \"section\":3,</br>" +
-//                    "    \"type\":\"实训实验室\"</br>" +
-//                    "}",
-//            value = "查询可用教室By类型|周数|周几|时间段"
-//    )
-//    public Message findArrangeByTypeAndWeeksAndDayAndSection(@RequestBody Map<String, Object> maps) {
-//        //获取参数信息
-//        List<Integer> weeks = (List<Integer>) maps.get("weeks");
-//        Integer day = (Integer) maps.get("day");
-//        Integer section = (Integer) maps.get("section");
-//        String type = (String) maps.get("type");
-//
-//        //非空验证
-//        if(weeks == null || section == null || type == null || day == null) {
-//            return new Message(403, "参数不能为空");
-//        }
-//
-//        // 进行教室的查询
-//
-//        List<Laboratory> laboratories = null;
-//        try {
-//            /*
-//             * 首先查询教室是否可用
-//             * 如果不可用使用返回错误信息和错误代码
-//             */
-//            List<Arrange> arranges = arrangeService.isEnableByWeeksAndDayAndSection(weeks, day, section);
-//
-//            System.out.println("arranges size = " + arranges.size());
-//
-//            if(arranges.size() != 0) {
-//                Message message = new Message(502, "所选时间段冲突");
-//                message.putData("arranges", arranges);
-//                return message;
-//            }
-//
-//            /*
-//             * 时间段可用，选择合适的实验室 并且进行返回
-//             */
-//            laboratories = laboratoryService.findByType(type);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return new Message(500, "查询空闲实验室失败-系统错误");
-//        }
-//
-//        Message message = new Message(200, "获取空实验室信息成功");
-//        message.putData("laboratories", laboratories);
-//        return message;
-//    }
+    @RequestMapping(value = "selectEnableLabByTWDS", method = RequestMethod.GET)
+    @ResponseBody
+    @Transactional(rollbackFor = Exception.class)
+    @ApiOperation(
+            httpMethod = "GET",
+            notes = "查询可用教室By类型|周数|周几|时间段</br>"+
+                    "输入JSON数据: {</br>" +
+                    "    \"weeks\":[1,2,3,4],</br>" +
+                    "    \"day\":1,</br>" +
+                    "    \"section\":3,</br>" +
+                    "    \"type\":\"实训实验室\"</br>" +
+                    "}",
+            value = "查询可用教室By类型|周数|周几|时间段"
+    )
+    public Message findArrangeByTypeAndWeeksAndDayAndSection(@RequestBody Map<String, Object> maps) {
+        //获取参数信息
+        List<Integer> weeks = (List<Integer>) maps.get("weeks");
+        Integer day = (Integer) maps.get("day");
+        Integer section = (Integer) maps.get("section");
+        String type = (String) maps.get("type");
+
+        //非空验证
+        if(weeks == null || section == null || type == null || day == null) {
+            return new Message(403, "参数不能为空");
+        }
+
+        // 进行教室的查询
+
+        List<Laboratory> laboratories = null;
+        try {
+            /*
+             * 首先查询教室是否可用
+             * 如果不可用使用返回错误信息和错误代码
+             */
+            List<Arrange> arranges = arrangeService.isEnableByWeeksAndDayAndSection(weeks, day, section,type);
+
+            System.out.println("arranges size = " + arranges.size());
+
+            if(arranges.size() != 0) {
+                Message message = new Message(502, "所选时间段冲突");
+                message.putData("arranges", arranges);
+                return message;
+            }
+
+            /*
+             * 时间段可用，选择合适的实验室 并且进行返回
+             */
+            laboratories = laboratoryService.findByType(type);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message(500, "查询空闲实验室失败-系统错误");
+        }
+
+        Message message = new Message(200, "获取空实验室信息成功");
+        message.putData("laboratories", laboratories);
+        return message;
+    }
 
 
     /**
@@ -701,25 +706,26 @@ public class ArrangeController {
      */
 
 
-//    @RequestMapping(value = "findArrangeByUserId", method = RequestMethod.POST)
-//    @ResponseBody
-//    @ApiOperation(
-//            httpMethod = "POST",
-//            notes = "查询课程By老师ID</br>"+
-//                    "输入JSON数据: {\"userId\":11}",
-//            value = "查询所有课程By老师ID"
-//    )
-//    public Message findArrangeByUserId(@RequestBody Map<String, Object> maps) throws Exception {
-//        Message message = new Message();
-//
-//        Integer userId = (Integer) maps.get("userId");
-//        if(userId == null) return new Message(403, "参数不全");
-//
-//
-//        List<Arrange> arranges = arrangeService.findArrangeByUserId(userId);
-//        List<Arrange> process = process(arranges);
-//        List<Arrange>[][] courseList = getCourseList(process);
-//        message.putData("arranges", courseList);
-//        return message;
-//    }
+    @RequestMapping(value = "findArrangeByUserId", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperation(
+            httpMethod = "POST",
+            notes = "通过老师ID查询某周排课</br>"+
+                    "输入JSON数据: {\"userId\":11}",
+            value = "通过老师ID查询某周排课"
+    )
+    public Message findArrangeByUserId(@RequestBody Map<String, Object> maps) throws Exception {
+        Message message = new Message();
+
+        Integer userId = (Integer) maps.get("userId");
+        Integer week = (Integer) maps.get("week");
+        if(userId == null|| week == null ) return new Message(403, "参数不全");
+
+
+        List<Arrange> arranges = arrangeService.findArrangeByUserId(userId,week);
+        List<Arrange> process = process(arranges);
+        List<Arrange>[][] courseList = getCourseList(process);
+        message.putData("arranges", courseList);
+        return message;
+    }
 }

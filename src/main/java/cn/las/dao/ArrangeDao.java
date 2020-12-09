@@ -2,6 +2,7 @@ package cn.las.dao;
 
 import cn.las.domain.Arrange;
 import cn.las.domain.Laboratory;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.*;
 
 
@@ -39,9 +40,8 @@ public interface ArrangeDao {
     @Select("select * from arrange where userId in (select id from user where teacher=#{teacherName})")
     List<Arrange> findByTeacherName(String teacherName) throws Exception;
 
-    @Select("select * from arrange where laboratoryId=#{laboratoryId}")
-
-    List<Arrange> findByLaboratoryId(int laboratoryId) throws Exception;
+    @Select("select * from arrange where laboratoryId=#{laboratoryId} and week=#{week}")
+    List<Arrange> findByLaboratoryId(@Param("laboratoryId") int laboratoryId,@Param("week") int week) throws Exception;
 
     // 插入课程，确定之前已经进行了验证
     @Insert("insert into arrange " +
@@ -169,48 +169,16 @@ public interface ArrangeDao {
             "#{week} ",
             "</foreach> ",
             "and day=#{day} and section=#{section}",
+            "and laboratoryId=(select laboratoryId from laboratory where type=#{type})",
             "</script>"
     })
-    @Results({
-            @Result(id = true, column = "id", property = "id"),
-            @Result(column = "laboratoryId", property = "laboratoryId"),
-            @Result(column = "userId", property = "userId"),
-            @Result(column = "courseId", property = "courseId"),
-            @Result(column = "week", property = "week"),
-            @Result(column = "day", property = "day"),
-            @Result(column = "section", property = "section"),
-            @Result(column = "number", property = "number"),
-            @Result(column = "status", property = "status"),
-            @Result(column = "userId", property = "user",
-                    one = @One(select = "cn.las.dao.UserDao.findUserInfoById")),
-            @Result(column = "laboratoryId", property = "laboratory",
-                    one = @One(select = "cn.las.dao.LaboratoryDao.findById")),
-            @Result(column = "courseId", property = "course",
-                    one = @One(select = "cn.las.dao.CourseDao.findCourseById"))
-    })
+
     List<Arrange> isEnableByWeeksAndDayAndSection(
-            @Param("weeks") List<Integer> weeks, @Param("day") Integer day, @Param("section") Integer section
+            @Param("weeks") List<Integer> weeks, @Param("day") Integer day, @Param("section") Integer section, @Param("type") String type
     ) throws Exception;
 
-    @Select("select * from arrange where userId=#{userId}")
-    @Results({
-            @Result(id = true, column = "id", property = "id"),
-            @Result(column = "laboratoryId", property = "laboratoryId"),
-            @Result(column = "userId", property = "userId"),
-            @Result(column = "courseId", property = "courseId"),
-            @Result(column = "week", property = "week"),
-            @Result(column = "day", property = "day"),
-            @Result(column = "section", property = "section"),
-            @Result(column = "number", property = "number"),
-            @Result(column = "status", property = "status"),
-            @Result(column = "userId", property = "user",
-                    one = @One(select = "cn.las.dao.UserDao.findUserInfoById")),
-            @Result(column = "laboratoryId", property = "laboratory",
-                    one = @One(select = "cn.las.dao.LaboratoryDao.findById")),
-            @Result(column = "courseId", property = "course",
-                    one = @One(select = "cn.las.dao.CourseDao.findCourseById"))
-    })
-    List<Arrange> findArrangeByUserId(Integer userId) throws Exception;
+    @Select("select * from arrange where userId=#{userId} and week=#{week}")
+    List<Arrange> findArrangeByUserId(@Param("userId") Integer userId, @Param("week") Integer week) throws Exception;
 
     @Delete("delete from arrange where userId=#{userId}")
     void removeByUserId(Integer userId) throws Exception;

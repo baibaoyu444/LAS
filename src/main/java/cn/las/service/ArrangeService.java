@@ -2,6 +2,7 @@ package cn.las.service;
 
 import cn.las.domain.Arrange;
 import cn.las.domain.Laboratory;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public interface ArrangeService {
     void updateArrangeByCourseId(@Param("courseId") int courseId)throws Exception;
 
     //通过实验室号查询排课情况
-    List<Arrange> findArrangeByLaboratoryId(@Param("laboratoryId")int laboratory)throws Exception;
+    List<Arrange> findArrangeByLaboratoryId(@Param("laboratoryId")int laboratory,@Param("week") int week)throws Exception;
 
     //通过课程号找到排课情况
     List<Arrange> findArrangeByCourseId(@Param("courseId")int courseId)throws Exception;
@@ -45,11 +46,11 @@ public interface ArrangeService {
     List<Arrange> findArrangeByWeekAndDayAndSection(Integer week, Integer day, Integer section) throws Exception;
 
     // 按照周、周几、第几段 判断是否有课程冲突
-    List<Arrange> isEnableByWeeksAndDayAndSection(List<Integer> weeks, Integer day, Integer section) throws Exception;
+    List<Arrange> isEnableByWeeksAndDayAndSection(List<Integer> weeks, Integer day, Integer section, String type) throws Exception;
 
     void insertArrange(Arrange arrange) throws Exception;
 
     void addArrange(Arrange arrange) throws Exception;
 
-    List<Arrange> findArrangeByUserId(Integer userId) throws Exception;
+    List<Arrange> findArrangeByUserId(Integer userId, Integer week) throws Exception;
 }
