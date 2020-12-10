@@ -447,7 +447,7 @@ public class ArrangeController {
              * 首先查询教室是否可用
              * 如果不可用使用返回错误信息和错误代码
              */
-            List<Arrange> arranges = arrangeService.isEnableByWeeksAndDayAndSection(weeks, day, section,type);
+            List<Arrange> arranges = arrangeService.isEnableByWeeksAndDayAndSection(weeks, day, section);
 
             System.out.println("arranges size = " + arranges.size());
 
@@ -616,37 +616,40 @@ public class ArrangeController {
      *
      * 测试已通过--白宝玉
      */
-//    @RequestMapping(value = "findSectionsByWD", method = RequestMethod.GET)
-//    @ResponseBody
-//    @ApiOperation(
-//            httpMethod = "GET",
-//            notes = "查询可用时间段By周数|周几</br>"+
-//                    "输入JSON数据: {\"weeks\":[1,2,3,4],\"day\":1}",
-//            value = "查询可用时间段By周数|周几"
-//    )
-//    public Message findEnableSectionsByWeeksAndDay(@RequestBody Map<String, Object> maps) {
-//        Message message = new Message();
-//
-//        // 获取数据
-//        List<Integer> weeks = (List<Integer>) maps.get("weeks");
-//        Integer day = (Integer) maps.get("day");
-//
-//        //非空验证
-//        if(weeks == null || day == null) {
-//            return new Message(403, "参数非空");
-//        }
-//
-//        // 进行可用时间段查询
-//        try {
-//            Set<Integer> sections = arrangeService.findSectionsByWeeksAndDay(weeks, day);
-//            message.putData("sections", sections);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return new Message(500, "获取空闲时间段错误");
-//        }
-//
-//        return new Message(200, "查询成功");
-//    }
+    @RequestMapping(value = "findSectionsByWD", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(
+            httpMethod = "GET",
+            notes = "查询可用时间段By周数|周几</br>"+
+                    "输入JSON数据: {\"weeks\":[1,2,3,4],\"day\":1}",
+            value = "查询可用时间段By周数|周几"
+    )
+    public Message findEnableSectionsByWeeksAndDay(@RequestBody Map<String, Object> maps) {
+
+
+        // 获取数据
+        List<Integer> weeks = (List<Integer>) maps.get("weeks");
+        Integer day = (Integer) maps.get("day");
+        String type = (String) maps.get("type");
+
+        //非空验证
+        if(weeks == null || day == null || type.equals("")) {
+            return new Message(403, "参数非空");
+        }
+
+        // 进行可用时间段查询
+        try {
+            Set<Integer> sections = arrangeService.findSectionsByWeeksAndDay(weeks, day,type);
+            Message message = new Message(200, "查询成功");
+            message.putData("sections", sections);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message(500, "获取空闲时间段错误");
+        }
+
+
+        return new Message(200, "查询成功");
+    }
 
     /**
      * @param maps
@@ -661,38 +664,38 @@ public class ArrangeController {
      *
      * 测试通过--高义博
      */
-//    @RequestMapping(value = "findArrangeByWDS", method = RequestMethod.GET)
-//    @ResponseBody
-//    @ApiOperation(
-//            httpMethod = "GET",
-//            notes = "查询课程By周数|周几|时间段</br>"+
-//                    "输入JSON数据: {\"week\":1,\"day\":1,\"section\":1}",
-//            value = "查询课程By周数|周几|时间段"
-//    )
-//    public Message findArrangeByWeekDayAndSection(@RequestBody Map<String, Object> maps) {
-//
-//        // 进行非空验证
-//        Integer week = (Integer) maps.get("week");
-//        Integer day = (Integer) maps.get("day");
-//        Integer section = (Integer) maps.get("section");
-//
-//        if(week == null || day == null || section == null) {
-//            return new Message(403, "参数不能为空");
-//        }
-//
-//        // 获取教室安排信息
-//        List<Arrange> arrange = null;
-//        try {
-//            arrange = arrangeService.findArrangeByWeekAndDayAndSection(week, day, section);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return new Message(500, "查询排课数据失败");
-//        }
-//
-//        Message message = new Message(200, "获取教室安排成功");
-//        message.putData("arranges", arrange);
-//        return message;
-//    }
+    @RequestMapping(value = "findArrangeByWDS", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(
+            httpMethod = "GET",
+            notes = "查询课程By周数|周几|时间段</br>"+
+                    "输入JSON数据: {\"week\":1,\"day\":1,\"section\":1}",
+            value = "查询课程By周数|周几|时间段"
+    )
+    public Message findArrangeByWeekDayAndSection(@RequestBody Map<String, Object> maps) {
+
+        // 进行非空验证
+        Integer week = (Integer) maps.get("week");
+        Integer day = (Integer) maps.get("day");
+        Integer section = (Integer) maps.get("section");
+
+        if(week == null || day == null || section == null) {
+            return new Message(403, "参数不能为空");
+        }
+
+        // 获取教室安排信息
+        List<Arrange> arrange = null;
+        try {
+            arrange = arrangeService.findArrangeByWeekAndDayAndSection(week, day, section);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message(500, "查询排课数据失败");
+        }
+
+        Message message = new Message(200, "获取教室安排成功");
+        message.putData("arranges", arrange);
+        return message;
+    }
 
 
     /**

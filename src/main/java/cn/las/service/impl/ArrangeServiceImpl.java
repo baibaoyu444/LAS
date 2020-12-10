@@ -82,9 +82,9 @@ public class ArrangeServiceImpl implements ArrangeService {
      * 2、返回集合当中包含节数信息
      */
     @Override
-    public Set<Integer> findSectionsByWeeksAndDay(List<Integer> weeks, Integer day) throws Exception {
+    public Set<Integer> findSectionsByWeeksAndDay(List<Integer> weeks, Integer day,String type) throws Exception {
         Set<Integer> sets = new HashSet<Integer>();
-        Set<Integer> empty = arrangeDao.findSectionsByWeeksAndDay(weeks, day);
+        Set<Integer> empty = arrangeDao.findSectionsByWeeksAndDay(weeks, day ,type);
         for (int i = 1; i <= 5; i++) {
             if(empty.contains(i)) sets.add(i);
         }
@@ -97,8 +97,8 @@ public class ArrangeServiceImpl implements ArrangeService {
     }
 
     @Override
-    public List<Arrange> isEnableByWeeksAndDayAndSection(List<Integer> weeks, Integer day, Integer section, String type) throws Exception {
-        return arrangeDao.isEnableByWeeksAndDayAndSection(weeks, day, section,type);
+    public List<Arrange> isEnableByWeeksAndDayAndSection(List<Integer> weeks, Integer day, Integer section) throws Exception {
+        return arrangeDao.isEnableByWeeksAndDayAndSection(weeks, day, section);
     }
 
     @Override

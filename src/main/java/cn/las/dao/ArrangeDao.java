@@ -123,30 +123,15 @@ public interface ArrangeDao {
                 "#{week} ",
                 "</foreach> ",
                 "and day=#{day}",
+                "and laboratoryId=any(select laboratoryId from laboratory where type=#{type})",
             "</script>"
     })
     Set<Integer> findSectionsByWeeksAndDay(
-            @Param("weeks") List<Integer> weeks, @Param("day") Integer day
+            @Param("weeks") List<Integer> weeks, @Param("day") Integer day, @Param("type") String type
     ) throws Exception;
 
     @Select("select * from arrange where week=#{week} and day=#{day} and section=#{section}")
-    @Results({
-            @Result(id = true, column = "id", property = "id"),
-            @Result(column = "laboratoryId", property = "laboratoryId"),
-            @Result(column = "userId", property = "userId"),
-            @Result(column = "courseId", property = "courseId"),
-            @Result(column = "week", property = "week"),
-            @Result(column = "day", property = "day"),
-            @Result(column = "section", property = "section"),
-            @Result(column = "number", property = "number"),
-            @Result(column = "status", property = "status"),
-            @Result(column = "userId", property = "user",
-                    one = @One(select = "cn.las.dao.UserDao.findUserInfoById")),
-            @Result(column = "laboratoryId", property = "laboratory",
-                    one = @One(select = "cn.las.dao.LaboratoryDao.findById")),
-            @Result(column = "courseId", property = "course",
-                    one = @One(select = "cn.las.dao.CourseDao.findCourseById"))
-    })
+
     List<Arrange> findArrangeByWeekAndDayAndSection(
             @Param("week") Integer week, @Param("day") Integer day, @Param("section") Integer section
     ) throws Exception;
@@ -169,12 +154,11 @@ public interface ArrangeDao {
             "#{week} ",
             "</foreach> ",
             "and day=#{day} and section=#{section}",
-            "and laboratoryId=(select laboratoryId from laboratory where type=#{type})",
             "</script>"
     })
 
     List<Arrange> isEnableByWeeksAndDayAndSection(
-            @Param("weeks") List<Integer> weeks, @Param("day") Integer day, @Param("section") Integer section, @Param("type") String type
+            @Param("weeks") List<Integer> weeks, @Param("day") Integer day, @Param("section") Integer section
     ) throws Exception;
 
     @Select("select * from arrange where userId=#{userId} and week=#{week}")
