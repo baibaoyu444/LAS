@@ -34,8 +34,8 @@ public class ArrangeServiceImpl implements ArrangeService {
         arrangeMapper.insertone(arrange);
     }
 
-    public void updateArrangeByCourseId(int courseId)throws Exception{
-        arrangeMapper.updateArrangeById(courseId);
+    public void updateArrangeById(int id, int week, int day, int section)throws Exception{
+        arrangeMapper.updateArrangeById(id,week,day,section);
     }
 
     public List<Arrange> findArrangeByLaboratoryId(int laboratoryId,int week)throws Exception{
@@ -97,8 +97,8 @@ public class ArrangeServiceImpl implements ArrangeService {
     }
 
     @Override
-    public List<Arrange> isEnableByWeeksAndDayAndSection(List<Integer> weeks, Integer day, Integer section) throws Exception {
-        return arrangeDao.isEnableByWeeksAndDayAndSection(weeks, day, section);
+    public List<Laboratory> isEnableByWeeksAndDayAndSection(List<Integer> weeks, Integer day, Integer section, String type) throws Exception {
+        return arrangeDao.isEnableByWeeksAndDayAndSection(weeks, day, section, type);
     }
 
     @Override

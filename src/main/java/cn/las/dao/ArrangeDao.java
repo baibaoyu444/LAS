@@ -148,17 +148,21 @@ public interface ArrangeDao {
      */
     @Select({
             "<script> ",
-            "select * from arrange ",
+            "select * from laboratory ",
+            "where type=#{type}",
+            "and id not in(",
+            "select laboratoryId from arrange",
             "where week in ",
             "<foreach collection='weeks' item='week' open='(' separator=',' close=')'> ",
             "#{week} ",
             "</foreach> ",
-            "and day=#{day} and section=#{section}",
+            "and day=#{day} and section=#{section})",
+
             "</script>"
     })
 
-    List<Arrange> isEnableByWeeksAndDayAndSection(
-            @Param("weeks") List<Integer> weeks, @Param("day") Integer day, @Param("section") Integer section
+    List<Laboratory> isEnableByWeeksAndDayAndSection(
+            @Param("weeks") List<Integer> weeks, @Param("day") Integer day, @Param("section") Integer section, @Param("type") String type
     ) throws Exception;
 
     @Select("select * from arrange where userId=#{userId} and week=#{week}")

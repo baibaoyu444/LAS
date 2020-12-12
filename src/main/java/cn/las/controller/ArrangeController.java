@@ -184,68 +184,35 @@ public class ArrangeController {
      *
      * 添加选课信息
      */
-//    @RequestMapping(value = "addArrangeMapper", method = RequestMethod.POST)
-//    @ResponseBody
-//    @ApiIgnore
-//    public Message addArrangeMapper(@RequestBody Arrange arrange) throws Exception {
-//        Message message = new Message();
-//
-//        String userId=String.valueOf(arrange.getUserId());
-//        String laboratoryId=String.valueOf(arrange.getLaboratoryId());
-//        String courseId=String.valueOf(arrange.getCourseId());
-//        String weeks=String.valueOf(arrange.getWeek());
-//        String sections=String.valueOf(arrange.getSection());
-//
-//
-//        //验证信息是否为空
-//
-//        if(userId == null){
-//            message.setCode(100);
-//            message.setMessage("教师id不能为空");
-//            return message;
-//        }
-//
-//        if(laboratoryId == null){
-//            message.setCode(101);
-//            message.setMessage("实验室id不能为空");
-//            return message;
-//        }
-//
-//        if(courseId == null){
-//            message.setCode(102);
-//            message.setMessage("课程id不能为空");
-//            return message;
-//        }
-//
-//        if(weeks == null){
-//            message.setCode(103);
-//            message.setMessage("上课周数不能为空");
-//            return message;
-//        }
-//
-//        if(sections == null){
-//            message.setCode(101);
-//            message.setMessage("所选节数不能为空");
-//            return message;
-//        }
-//
-//
-//        //验证排课是否冲突
-//
-//
-//        try {
-//            arrangeService.insertone(arrange);
-//        }catch (Exception e){
-//            message.setCode(203);
-//            message.setMessage("增加排课信息失败");
-//            return message;
-//        }
-//
-//        message.setCode(200);
-//        message.setMessage("增加排课成功");
-//
-//        return message;
-//    }
+    @RequestMapping(value = "addArrangeMapper", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiIgnore
+    public Message addArrangeMapper(@RequestBody Map<String,Object>maps) throws Exception {
+        Message message = new Message();
+
+        Integer
+
+        //验证信息是否为空
+
+
+
+
+        //验证排课是否冲突
+
+
+        try {
+            arrangeService.insertone(arrange);
+        }catch (Exception e){
+            message.setCode(203);
+            message.setMessage("增加排课信息失败");
+            return message;
+        }
+
+        message.setCode(200);
+        message.setMessage("增加排课成功");
+
+        return message;
+    }
 
     /**
      * @param courseId 课程id
@@ -284,31 +251,41 @@ public class ArrangeController {
 //    }
 
     /**
-     * @param courseId 课程id
-     * @return  返回成功 | 失败信息
-     * @throws Exception
-     *
-     * 修改选课信息
-     */
-//    @RequestMapping(value = "updateArrangeByCourseId", method = RequestMethod.POST)
-//    @ResponseBody
-//    @Ignore
-//    public Message updateArrangeById(@RequestParam int courseId)throws Exception {
-//        List<Arrange> all = null;
-//        try {
-//            all = arrangeService.findArrangeByCourseId(courseId);
-//        } catch (Exception e) {
-//            return new Message(207, "查询此课程的排课情况失败");
-//        }
-//
-//        if(all == null) {
-//            return new Message(201, "不存在此课程");
-//        }
-//
-//        arrangeService.updateArrangeByCourseId(courseId);
-//
-//        return new Message(200, "修改课程成功");
-//    }
+     * @param map1
+     * {
+     *     id:...,
+     *     week:...,
+     *     day:...,
+     *     section:...
+     * }
+     **/
+    @RequestMapping(value = "updateArrangeByCourseId", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(
+            httpMethod = "GET",
+            notes = "临时调课",
+            value = "临时调课"
+    )
+    public Message updateArrangeById(@RequestBody Map<String, Object> map1)throws Exception {
+
+        Integer id = (Integer) map1.get("id");
+        Integer week = (Integer) map1.get("week");
+        Integer day = (Integer) map1.get("day");
+        Integer section = (Integer) map1.get("day");
+
+        if(id == null || week == null || day == null || section == null){
+            return new Message(403, "参数不能为空");
+        }
+
+        try {
+            arrangeService.updateArrangeById(id,week,day,section);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message(207, "修改排课失败");
+        }
+
+        return new Message(200, "修改排课成功");
+    }
 
 
     /**
@@ -441,33 +418,32 @@ public class ArrangeController {
 
         // 进行教室的查询
 
-        List<Laboratory> laboratories = null;
+        List<Laboratory> laboratoriesid = null;
         try {
             /*
-             * 首先查询教室是否可用
+             * 首先查询某教室是否可用
              * 如果不可用使用返回错误信息和错误代码
              */
-            List<Arrange> arranges = arrangeService.isEnableByWeeksAndDayAndSection(weeks, day, section);
 
-            System.out.println("arranges size = " + arranges.size());
 
-            if(arranges.size() != 0) {
+
+            laboratoriesid = arrangeService.isEnableByWeeksAndDayAndSection(weeks, day, section,type);
+
+            System.out.println("arranges size = " + laboratoriesid.size());
+
+            if(laboratoriesid.size() == 0) {
                 Message message = new Message(502, "所选时间段冲突");
-                message.putData("arranges", arranges);
+                message.putData("laboratoriesid", laboratoriesid);
                 return message;
             }
 
-            /*
-             * 时间段可用，选择合适的实验室 并且进行返回
-             */
-            laboratories = laboratoryService.findByType(type);
         } catch (Exception e) {
             e.printStackTrace();
             return new Message(500, "查询空闲实验室失败-系统错误");
         }
 
         Message message = new Message(200, "获取空实验室信息成功");
-        message.putData("laboratories", laboratories);
+        message.putData("laboratoryid", laboratoriesid);
         return message;
     }
 

@@ -1,10 +1,7 @@
 package cn.las.dao;
 
 import cn.las.domain.Laboratory;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -23,7 +20,8 @@ public interface LaboratoryDao {
     void deleteById(Integer id) throws Exception;
 
     @Select("select * from laboratory where type=#{type}")
-    List<Laboratory> findByType(String type) throws Exception;
+    List<Laboratory> findByType(@Param("type") String type) throws Exception;
+
 
     @Select("select status from laboratory where id=#{id}")
     Integer findLaboratoryStatusById(Integer id) throws Exception;

@@ -14,14 +14,14 @@
     </select>
 
     <!-- 通过课程id删掉排课 -->
-    <delete id="deleteArrangeByCourseId" parameterType="java.lang.Integer">
+    <delete id="deleteArrangeById" parameterType="java.lang.Integer">
         delete from arrange where id=#{id}
     </delete>
 
     <!-- 通过课程id修改排课 -->
-    <update id="updateArrangeByCourseId" parameterType="java.lang.Integer">
+    <update id="updateArrangeByCourseId">
         update arrange
-        set laboratoryId=#{laboratoryId},userId=#{userId},courseId=#{courseId},week=#{week},section=#{section},classId=#{classId}
+        set week=#{week},`day`=#{day},`section`=#{section}
         where id=#{id}
     </update>
 

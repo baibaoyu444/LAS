@@ -19,7 +19,7 @@ public interface ArrangeService {
     void insertone(Arrange arrange)throws Exception;
 
     //通过课程号修改排课
-    void updateArrangeByCourseId(@Param("courseId") int courseId)throws Exception;
+    void updateArrangeById(int id, int week, int day, int section)throws Exception;
 
     //通过实验室号查询排课情况
     List<Arrange> findArrangeByLaboratoryId(@Param("laboratoryId")int laboratory,@Param("week") int week)throws Exception;
@@ -46,7 +46,7 @@ public interface ArrangeService {
     List<Arrange> findArrangeByWeekAndDayAndSection(Integer week, Integer day, Integer section) throws Exception;
 
     // 按照周、周几、第几段 判断是否有课程冲突
-    List<Arrange> isEnableByWeeksAndDayAndSection(List<Integer> weeks, Integer day, Integer section) throws Exception;
+    List<Laboratory> isEnableByWeeksAndDayAndSection(List<Integer> weeks, Integer day, Integer section, String type) throws Exception;
 
     void insertArrange(Arrange arrange) throws Exception;
 

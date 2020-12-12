@@ -10,7 +10,7 @@ public interface ArrangeMapper {
 
     void deleteById(@Param("scourseId") int courseId)throws Exception;
 
-    void updateArrangeById(@Param("courseId") int courseId)throws Exception;
+    void updateArrangeById(@Param("id") int id, @Param("week") int week, @Param("day") int day, @Param("section") int section)throws Exception;
 
     void insertone(Arrange arrange)throws Exception;
 
