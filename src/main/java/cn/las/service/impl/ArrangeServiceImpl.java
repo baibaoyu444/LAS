@@ -97,7 +97,7 @@ public class ArrangeServiceImpl implements ArrangeService {
     }
 
     @Override
-    public List<Laboratory> isEnableByWeeksAndDayAndSection(List<Integer> weeks, Integer day, Integer section, String type) throws Exception {
+    public List<Integer> isEnableByWeeksAndDayAndSection(List<Integer> weeks, Integer day, Integer section, String type) throws Exception {
         return arrangeDao.isEnableByWeeksAndDayAndSection(weeks, day, section, type);
     }
 

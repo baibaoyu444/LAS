@@ -46,7 +46,7 @@ public interface ArrangeService {
     List<Arrange> findArrangeByWeekAndDayAndSection(Integer week, Integer day, Integer section) throws Exception;
 
     // 按照周、周几、第几段 判断是否有课程冲突
-    List<Laboratory> isEnableByWeeksAndDayAndSection(List<Integer> weeks, Integer day, Integer section, String type) throws Exception;
+    List<Integer> isEnableByWeeksAndDayAndSection(List<Integer> weeks, Integer day, Integer section, String type) throws Exception;
 
     void insertArrange(Arrange arrange) throws Exception;
 

@@ -148,7 +148,7 @@ public interface ArrangeDao {
      */
     @Select({
             "<script> ",
-            "select * from laboratory ",
+            "select id from laboratory ",
             "where type=#{type}",
             "and id not in(",
             "select laboratoryId from arrange",
@@ -161,7 +161,7 @@ public interface ArrangeDao {
             "</script>"
     })
 
-    List<Laboratory> isEnableByWeeksAndDayAndSection(
+    List<Integer> isEnableByWeeksAndDayAndSection(
             @Param("weeks") List<Integer> weeks, @Param("day") Integer day, @Param("section") Integer section, @Param("type") String type
     ) throws Exception;
 

@@ -188,20 +188,33 @@ public class ArrangeController {
     @ResponseBody
     @ApiIgnore
     public Message addArrangeMapper(@RequestBody Map<String,Object>maps) throws Exception {
-        Message message = new Message();
 
-        Integer
+        String username = (String)maps.get("username");
+        User user = userService.findByUsername(username);
+        Integer userId = user.getId();
+
+        String coursename = (String)maps.get("coursename");
+        Course course = courseService.findCourseByCourseName(coursename);
+        Integer courseId = course.getId();
+
+        List<Integer> weeks = (List<Integer>) maps.get("weeks");
+        List<Integer> sections = (List<Integer>) maps.get("sections");
+        Integer day = (Integer) maps.get("day");
+        Integer number = (Integer) maps.get("number");
+        String classes = (String) maps.get("classes");
 
         //验证信息是否为空
-
-
-
+        if (userId == null || courseId == null || weeks == null || sections == null || day == null || number == null || classes == null){
+            return new Message(403, "参数不能为空");
+        }
 
         //验证排课是否冲突
 
 
         try {
-            arrangeService.insertone(arrange);
+            for (Integer i : sections){
+
+            }
         }catch (Exception e){
             message.setCode(203);
             message.setMessage("增加排课信息失败");
@@ -418,14 +431,12 @@ public class ArrangeController {
 
         // 进行教室的查询
 
-        List<Laboratory> laboratoriesid = null;
+        List<Integer> laboratoriesid = null;
         try {
             /*
              * 首先查询某教室是否可用
              * 如果不可用使用返回错误信息和错误代码
              */
-
-
 
             laboratoriesid = arrangeService.isEnableByWeeksAndDayAndSection(weeks, day, section,type);
 
