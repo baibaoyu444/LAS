@@ -1,7 +1,7 @@
 package cn.las.service.impl;
 
 import cn.las.dao.RoleDao;
-import cn.las.domain.Role;
+import cn.las.bean.entity.Role;
 import cn.las.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

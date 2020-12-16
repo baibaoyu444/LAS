@@ -1,6 +1,6 @@
 package cn.las.service;
 
-import cn.las.domain.IClass;
+import cn.las.bean.entity.IClass;
 
 import java.util.List;
 

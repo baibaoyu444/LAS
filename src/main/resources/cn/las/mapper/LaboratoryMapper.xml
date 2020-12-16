@@ -21,7 +21,7 @@
         set `type`=#{type} where id=#{id}
     </update>
 
-    <insert id="addLaboratory" parameterType="cn.las.domain.Laboratory">
+    <insert id="addLaboratory" parameterType="cn.las.bean.entity.Laboratory">
         insert into laboratory(name, type, size, location, status)
         values(#{name},#{type},#{size},#{location},${1});
     </insert>

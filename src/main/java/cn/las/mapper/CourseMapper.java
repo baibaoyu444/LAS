@@ -1,6 +1,6 @@
 package cn.las.mapper;
 
-import cn.las.domain.Course;
+import cn.las.bean.entity.Course;
 
 import java.util.List;
 

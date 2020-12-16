@@ -1,4 +1,4 @@
-package cn.las.domain;
+package cn.las.bean.entity;
 
 import lombok.Data;
 import lombok.ToString;

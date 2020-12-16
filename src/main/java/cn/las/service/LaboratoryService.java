@@ -1,7 +1,6 @@
 package cn.las.service;
 
-import cn.las.domain.Laboratory;
-import org.apache.ibatis.annotations.Param;
+import cn.las.bean.entity.Laboratory;
 
 import java.util.List;
 

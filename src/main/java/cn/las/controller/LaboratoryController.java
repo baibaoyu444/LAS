@@ -1,7 +1,7 @@
 package cn.las.controller;
 
-import cn.las.domain.Laboratory;
-import cn.las.domain.Message;
+import cn.las.bean.entity.Laboratory;
+import cn.las.bean.entity.Message;
 import cn.las.service.LaboratoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

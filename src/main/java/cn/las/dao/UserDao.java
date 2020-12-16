@@ -1,7 +1,7 @@
 package cn.las.dao;
 
-import cn.las.domain.Role;
-import cn.las.domain.User;
+import cn.las.bean.entity.Role;
+import cn.las.bean.entity.User;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;

@@ -4,7 +4,7 @@
 <mapper namespace="cn.las.mapper.CourseMapper">
 
     <!-- 根据教师id找到所有课程信息 -->
-    <select id="selectAll" resultType="cn.las.domain.Course">
+    <select id="selectAll" resultType="cn.las.bean.entity.Course">
         select * from course
     </select>
 

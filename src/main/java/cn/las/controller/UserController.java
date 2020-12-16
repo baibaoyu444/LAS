@@ -1,13 +1,12 @@
 package cn.las.controller;
 
-import cn.las.domain.Message;
-import cn.las.domain.User;
+import cn.las.bean.entity.Message;
+import cn.las.bean.entity.User;
 import cn.las.service.RoleService;
 import cn.las.service.UserService;
 import cn.las.utils.AESUtil;
 import cn.las.utils.MD5Utils;
 import io.swagger.annotations.*;
-import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;

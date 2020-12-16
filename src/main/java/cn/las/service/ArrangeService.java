@@ -1,8 +1,7 @@
 package cn.las.service;
 
-import cn.las.domain.Arrange;
-import cn.las.domain.Laboratory;
-import io.swagger.models.auth.In;
+import cn.las.bean.entity.Arrange;
+import cn.las.bean.entity.Laboratory;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -53,4 +52,29 @@ public interface ArrangeService {
     void addArrange(Arrange arrange) throws Exception;
 
     List<Arrange> findArrangeByUserId(Integer userId, Integer week) throws Exception;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    List<Arrange> findByArrange(Arrange arrange) throws Exception;
 }

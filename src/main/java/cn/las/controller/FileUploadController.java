@@ -1,5 +1,6 @@
 package cn.las.controller;
 
+import cn.las.bean.entity.*;
 import cn.las.domain.*;
 import cn.las.service.*;
 import cn.las.utils.CSVUtil;

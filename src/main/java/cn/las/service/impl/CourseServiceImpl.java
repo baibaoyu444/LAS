@@ -2,7 +2,7 @@ package cn.las.service.impl;
 
 import cn.las.dao.ArrangeDao;
 import cn.las.dao.CourseDao;
-import cn.las.domain.Course;
+import cn.las.bean.entity.Course;
 import cn.las.mapper.CourseMapper;
 import cn.las.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;

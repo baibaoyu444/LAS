@@ -1,8 +1,8 @@
 package cn.las.service.impl;
 
 import cn.las.dao.ArrangeDao;
-import cn.las.domain.Arrange;
-import cn.las.domain.Laboratory;
+import cn.las.bean.entity.Arrange;
+import cn.las.bean.entity.Laboratory;
 import cn.las.mapper.ArrangeMapper;
 import cn.las.service.ArrangeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,5 +114,17 @@ public class ArrangeServiceImpl implements ArrangeService {
     @Override
     public List<Arrange> findArrangeByUserId(Integer userId,Integer week) throws Exception {
         return arrangeDao.findArrangeByUserId(userId,week);
+    }
+
+
+    /**
+     * @author 白宝玉
+     * @param arrange
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<Arrange> findByArrange(Arrange arrange) throws Exception {
+        return arrangeDao.findByArrange(arrange);
     }
 }

@@ -1,15 +1,13 @@
 package cn.las.controller;
 
-import cn.las.domain.*;
+import cn.las.bean.entity.Arrange;
+import cn.las.bean.entity.Message;
 import cn.las.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.models.auth.In;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -158,12 +156,12 @@ public class ArrangeController {
         List<Arrange> all = null;
         try {
             all = arrangeService.findAll();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new Message(205, "获取排课信息失败");
         }
 
-        if(all == null){
+        if(all == null) {
             return new Message(201, "不存在任何课程");
         }
 
@@ -171,14 +169,14 @@ public class ArrangeController {
         List<Arrange>[][] courseList = getCourseList(process);
 
         Message message = new Message(200, "获取排课信息成功");
-        message.putData("AllArrange",courseList);
+        message.putData("arranges", courseList);
         return message;
     }
 
     /**
      * 接口存在问题
      *
-     * @param arrange 自动封装排课对象
+     * @param maps 自动封装排课对象
      * @return  返回成功 | 失败信息
      * @throws Exception
      *
@@ -187,26 +185,17 @@ public class ArrangeController {
     @RequestMapping(value = "addArrangeMapper", method = RequestMethod.POST)
     @ResponseBody
     @ApiIgnore
-    public Message addArrangeMapper(@RequestBody Map<String,Object>maps) throws Exception {
+    public Message addArrangeMapper(@RequestBody Map<String,Object> maps) throws Exception {
 
-        String username = (String)maps.get("username");
-        User user = userService.findByUsername(username);
-        Integer userId = user.getId();
-
-        String coursename = (String)maps.get("coursename");
-        Course course = courseService.findCourseByCourseName(coursename);
-        Integer courseId = course.getId();
+        Message message = null;
+        Integer userId = (Integer) maps.get("userId");
+        Integer courseId = (Integer) maps.get("courseId");
 
         List<Integer> weeks = (List<Integer>) maps.get("weeks");
         List<Integer> sections = (List<Integer>) maps.get("sections");
         Integer day = (Integer) maps.get("day");
         Integer number = (Integer) maps.get("number");
         String classes = (String) maps.get("classes");
-
-        //验证信息是否为空
-        if (userId == null || courseId == null || weeks == null || sections == null || day == null || number == null || classes == null){
-            return new Message(403, "参数不能为空");
-        }
 
         //验证排课是否冲突
 
@@ -276,7 +265,7 @@ public class ArrangeController {
     @ResponseBody
     @ApiOperation(
             httpMethod = "GET",
-            notes = "临时调课",
+            notes = "",
             value = "临时调课"
     )
     public Message updateArrangeById(@RequestBody Map<String, Object> map1)throws Exception {
@@ -311,20 +300,18 @@ public class ArrangeController {
     @ResponseBody
     @ApiOperation(
             httpMethod = "POST",
-            notes = "根据实验室id查看每周排课",
-            value = "根据实验室id查看每周排课"
+            notes = "",
+            value = "查询实验室排课情况"
     )
     public Message findArrangeByLaboratoryId(@RequestBody Map<String, Object> maps)throws Exception{
         int id = (Integer) maps.get("laboratoryId");
-        System.out.println(id);
         int week = (Integer) maps.get("week");
-        System.out.println(week);
         List<Arrange> all = null;
         try {
             all = arrangeService.findArrangeByLaboratoryId(id,week);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return new Message(208, "查询此实验室的排课情况失败");
+            return new Message(205, "查询此实验室的排课情况失败");
         }
 
         if(all == null) {
@@ -336,7 +323,7 @@ public class ArrangeController {
         List<Arrange>[][] courseList = getCourseList(process);
 
         Message message = new Message(200, "获取排课信息成功");
-        message.putData("ArrangeByLaboratoryId",courseList);
+        message.putData("arranges",courseList);
         return message;
     }
 
@@ -603,40 +590,40 @@ public class ArrangeController {
      *
      * 测试已通过--白宝玉
      */
-    @RequestMapping(value = "findSectionsByWD", method = RequestMethod.GET)
-    @ResponseBody
-    @ApiOperation(
-            httpMethod = "GET",
-            notes = "查询可用时间段By周数|周几</br>"+
-                    "输入JSON数据: {\"weeks\":[1,2,3,4],\"day\":1}",
-            value = "查询可用时间段By周数|周几"
-    )
-    public Message findEnableSectionsByWeeksAndDay(@RequestBody Map<String, Object> maps) {
-
-
-        // 获取数据
-        List<Integer> weeks = (List<Integer>) maps.get("weeks");
-        Integer day = (Integer) maps.get("day");
-        String type = (String) maps.get("type");
-
-        //非空验证
-        if(weeks == null || day == null || type.equals("")) {
-            return new Message(403, "参数非空");
-        }
-
-        // 进行可用时间段查询
-        try {
-            Set<Integer> sections = arrangeService.findSectionsByWeeksAndDay(weeks, day,type);
-            Message message = new Message(200, "查询成功");
-            message.putData("sections", sections);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Message(500, "获取空闲时间段错误");
-        }
-
-
-        return new Message(200, "查询成功");
-    }
+//    @RequestMapping(value = "findSectionsByWD", method = RequestMethod.GET)
+//    @ResponseBody
+//    @ApiOperation(
+//            httpMethod = "GET",
+//            notes = "查询可用时间段By周数|周几</br>"+
+//                    "输入JSON数据: {\"weeks\":[1,2,3,4],\"day\":1}",
+//            value = "查询可用时间段By周数|周几"
+//    )
+//    public Message findEnableSectionsByWeeksAndDay(@RequestBody Map<String, Object> maps) {
+//
+//
+//        // 获取数据
+//        List<Integer> weeks = (List<Integer>) maps.get("weeks");
+//        Integer day = (Integer) maps.get("day");
+//        String type = (String) maps.get("type");
+//
+//        //非空验证
+//        if(weeks == null || day == null || type.equals("")) {
+//            return new Message(403, "参数非空");
+//        }
+//
+//        // 进行可用时间段查询
+//        try {
+//            Set<Integer> sections = arrangeService.findSectionsByWeeksAndDay(weeks, day, type);
+//            Message message = new Message(200, "查询成功");
+//            message.putData("sections", sections);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return new Message(500, "获取空闲时间段错误");
+//        }
+//
+//
+//        return new Message(200, "查询成功");
+//    }
 
     /**
      * @param maps
@@ -718,4 +705,138 @@ public class ArrangeController {
         message.putData("arranges", courseList);
         return message;
     }
+
+
+    /**
+     * 按照用户id和周数week获取个人排课信息
+     *
+     * @param arrange
+     * @return
+     */
+    @RequestMapping(value = "",method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(
+            httpMethod = "POST",
+            notes = "按照用户id和周数week获取个人排课信息</br>"+
+                    "输入JSON数据: {\"userId\":11, \"week\":1}",
+            value = "按照用户id和周数week获取个人排课信息"
+    )
+    public Message find(@RequestBody Arrange arrange) {
+
+        List<Arrange> list = null;
+        try {
+            list = arrangeService.findByArrange(arrange);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message(500, "服务器错误");
+        }
+        Message message = new Message(200, "获取数据成功");
+        message.putData("arranges", list);
+        return message;
+    }
+
+
+    /**
+     * 按照用户id和周数week获取个人排课信息
+     *
+     * @param arrange
+     * @return
+     *
+     * 测试通过--白宝玉
+     */
+    @RequestMapping(value = "/findByIdAndWeek",method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(
+            httpMethod = "GET",
+            notes = "按照用户id和周数week获取个人排课信息</br>"+
+                    "输入JSON数据: {\"userId\":11, \"week\":1}",
+            value = "按照用户id和周数week获取个人排课信息"
+    )
+    public Message findByIdAndWeek(@RequestBody Arrange arrange) {
+
+        System.out.println(arrange);
+        List<Arrange> list = null;
+        try {
+            list = arrangeService.findByArrange(arrange);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message(500, "服务器错误");
+        }
+
+        // 进行数据封装
+        List<Arrange> process = process(list);
+        List<Arrange>[][] courseList = getCourseList(process);
+        Message message = new Message(200, "获取数据成功");
+        message.putData("arranges", courseList);
+        return message;
+    }
+
+
+    /**
+     * 增加排课信息列表
+     * @param maps
+     * @return
+     */
+    @RequestMapping(value = "/insertManyArrange", method = RequestMethod.POST)
+    @ResponseBody
+    @Transactional(rollbackFor = Exception.class)
+    @ApiOperation(
+            httpMethod = "POST",
+            notes = "按照用户id和周数week获取个人排课信息</br>"+
+                    "输入JSON数据: {\"userId\":11, \"week\":1}",
+            value = "按照用户id和周数week获取个人排课信息"
+    )
+    public Message insertManyArrange(@RequestBody Map<String, Map<String, Object>> maps) {
+        Message message = new Message(200, "访问接口成功");
+
+        // 遍历传递数据
+        int i = 0;
+        for (String key : maps.keySet()) {
+            Map<String, Object> map = maps.get(key);
+
+            /*
+             获取关键参数
+             参数约束：
+                课程名称|当前用户id|人数|多个班级
+                实验室类型（[其中包含无限制，也就是任何一个教室都行]
+                多个周次|周几|第几节课|安排课时
+             */
+            Integer courseId = (Integer) map.get("courseId");
+            Integer userId = (Integer) map.get("userId");
+            Integer number  = (Integer) map.get("number");
+            String classes = (String) map.get("classes");
+            String type = (String) map.get("type");
+            List<Integer> weeks = (List<Integer>) map.get("weeks");
+            Integer day = (Integer) map.get("day");
+            Integer section = (Integer) map.get("section");
+
+            // 新增课程封装
+            Arrange arrange = new Arrange();
+            arrange.setCourseId(courseId);
+            arrange.setUserId(userId);
+            arrange.setNumber(number);
+            arrange.setClasses(classes);
+            arrange.setWeeks(weeks);
+            arrange.setDay(day);
+            arrange.setSection(section);
+
+            try {
+                // 新增课程校验
+                arrangeService.insertArrange(arrange);
+            } catch (Exception e) {
+                e.printStackTrace();
+                // 处理错误信息  对错误信息进行封装
+
+
+            }
+
+            i++;
+        }
+        return message;
+    }
+
+
+
+
+
 }

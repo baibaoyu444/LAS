@@ -1,6 +1,6 @@
 package cn.las.dao;
 
-import cn.las.domain.Laboratory;
+import cn.las.bean.entity.Laboratory;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

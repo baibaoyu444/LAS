@@ -1,7 +1,7 @@
 package cn.las.controller;
 
-import cn.las.domain.IClass;
-import cn.las.domain.Message;
+import cn.las.bean.entity.IClass;
+import cn.las.bean.entity.Message;
 import cn.las.service.IClassService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.sql.BatchUpdateException;
 import java.util.List;
 import java.util.Map;
 

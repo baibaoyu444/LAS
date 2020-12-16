@@ -1,8 +1,7 @@
 package cn.las.dao;
 
-import cn.las.domain.Arrange;
-import cn.las.domain.Laboratory;
-import io.swagger.models.auth.In;
+import cn.las.bean.entity.Arrange;
+import cn.las.bean.entity.Laboratory;
 import org.apache.ibatis.annotations.*;
 
 
@@ -176,4 +175,52 @@ public interface ArrangeDao {
 
     @Delete("delete from arrange where laboratoryId=#{laboratoryId}")
     void removeByLaboratoryId(Integer laboratoryId) throws Exception;
+
+    @Select({
+            "<script>"+
+            "select * from arrange where 1=1 " +
+                    " <if test='laboratoryId != 0'> " +
+                    " and laboratoryId = #{laboratoryId} " +
+                    " </if> " +
+                    " <if test='courseId != 0'> " +
+                    " and courseId = #{courseId} " +
+                    " </if> " +
+                    " <if test='userId != 0'> " +
+                    " and userId = #{userId} " +
+                    " </if> " +
+                    " <if test='week != 0'> " +
+                    " and week = #{week} " +
+                    " </if> " +
+                    " <if test='day != 0'> " +
+                    " and day = #{day} " +
+                    " </if> " +
+                    " <if test='section != 0'> " +
+                    " and section = #{section} " +
+                    " </if> " +
+                    " <if test='number != 0'> " +
+                    " and section = #{number} " +
+                    " </if> " +
+                    " <if test='classes != null'> " +
+                    " and classes like %#{classes}% " +
+                    " </if> "+
+            "</script>"
+    })
+    @Results({
+            @Result(id = true, column = "id", property = "id"),
+            @Result(column = "laboratoryId", property = "laboratoryId"),
+            @Result(column = "userId", property = "userId"),
+            @Result(column = "courseId", property = "courseId"),
+            @Result(column = "week", property = "week"),
+            @Result(column = "day", property = "day"),
+            @Result(column = "section", property = "section"),
+            @Result(column = "number", property = "number"),
+            @Result(column = "status", property = "status"),
+            @Result(column = "userId", property = "user",
+                    one = @One(select = "cn.las.dao.UserDao.findUserInfoById")),
+            @Result(column = "laboratoryId", property = "laboratory",
+                    one = @One(select = "cn.las.dao.LaboratoryDao.findById")),
+            @Result(column = "courseId", property = "course",
+                    one = @One(select = "cn.las.dao.CourseDao.findCourseById"))
+    })
+    List<Arrange> findByArrange(Arrange arrange) throws Exception;
 }

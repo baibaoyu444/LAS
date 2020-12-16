@@ -1,14 +1,14 @@
 package cn.las.mapper;
 
-import cn.las.domain.Arrange;
+import cn.las.bean.entity.Arrange;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 public interface ArrangeMapper {
-    List<Arrange> selectAll(@Param("userId") int userId)throws Exception;
+    List<Arrange> findByUserId(@Param("userId") int userId)throws Exception;
 
-    void deleteById(@Param("scourseId") int courseId)throws Exception;
+    void deleteById(@Param("courseId") int courseId)throws Exception;
 
     void updateArrangeById(@Param("id") int id, @Param("week") int week, @Param("day") int day, @Param("section") int section)throws Exception;
 

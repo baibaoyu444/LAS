@@ -1,4 +1,4 @@
-package cn.las.domain;
+package cn.las.bean.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
@@ -28,6 +28,7 @@ public class Laboratory {
     private List<String> limits;
 
     public List<String> getLimits() {
+        if(limitpro == null) return null;
         String[] s = limitpro.split(" ");
         limits.addAll(Arrays.asList(s));
         return limits;

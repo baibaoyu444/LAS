@@ -1,6 +1,6 @@
 package cn.las.service;
 
-import cn.las.domain.Role;
+import cn.las.bean.entity.Role;
 import org.apache.ibatis.annotations.Param;
 
 public interface RoleService {

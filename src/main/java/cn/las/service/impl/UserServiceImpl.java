@@ -3,7 +3,7 @@ package cn.las.service.impl;
 import cn.las.dao.ArrangeDao;
 import cn.las.dao.RoleDao;
 import cn.las.dao.UserDao;
-import cn.las.domain.User;
+import cn.las.bean.entity.User;
 import cn.las.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

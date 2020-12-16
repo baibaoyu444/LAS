@@ -1,6 +1,6 @@
 package cn.las.service;
 
-import cn.las.domain.User;
+import cn.las.bean.entity.User;
 
 import java.util.List;
 

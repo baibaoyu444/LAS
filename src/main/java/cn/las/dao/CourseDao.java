@@ -1,6 +1,6 @@
 package cn.las.dao;
 
-import cn.las.domain.Course;
+import cn.las.bean.entity.Course;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;

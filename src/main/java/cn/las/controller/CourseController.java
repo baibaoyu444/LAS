@@ -1,8 +1,8 @@
 package cn.las.controller;
 
 import cn.las.service.LaboratoryService;
-import cn.las.domain.Course;
-import cn.las.domain.Message;
+import cn.las.bean.entity.Course;
+import cn.las.bean.entity.Message;
 import cn.las.service.CourseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

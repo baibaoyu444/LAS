@@ -2,7 +2,7 @@ package cn.las.service.impl;
 
 import cn.las.dao.ArrangeDao;
 import cn.las.dao.IClassDao;
-import cn.las.domain.IClass;
+import cn.las.bean.entity.IClass;
 import cn.las.service.IClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
