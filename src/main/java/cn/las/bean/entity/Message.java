@@ -1,8 +1,5 @@
 package cn.las.bean.entity;
 
-import lombok.Data;
-import lombok.ToString;
-
 import java.util.HashMap;
 import java.util.Map;
 

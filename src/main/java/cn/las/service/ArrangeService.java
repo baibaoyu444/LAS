@@ -1,5 +1,6 @@
 package cn.las.service;
 
+import cn.las.bean.dto.ArrangeDTO;
 import cn.las.bean.entity.Arrange;
 import cn.las.bean.entity.Laboratory;
 import org.apache.ibatis.annotations.Param;
@@ -76,5 +77,5 @@ public interface ArrangeService {
 
 
 
-    List<Arrange> findByArrange(Arrange arrange) throws Exception;
+    List<Arrange> findByArrange(ArrangeDTO dto) throws Exception;
 }

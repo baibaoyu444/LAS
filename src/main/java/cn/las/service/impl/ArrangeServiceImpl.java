@@ -1,10 +1,19 @@
 package cn.las.service.impl;
 
+import cn.las.bean.dto.ArrangeDTO;
+import cn.las.bean.entity.Course;
+import cn.las.controller.ArrangeController;
+import cn.las.converter.ArrangeConverter;
 import cn.las.dao.ArrangeDao;
 import cn.las.bean.entity.Arrange;
 import cn.las.bean.entity.Laboratory;
+import cn.las.dao.CourseDao;
+import cn.las.dao.LaboratoryDao;
+import cn.las.dao.UserDao;
 import cn.las.mapper.ArrangeMapper;
 import cn.las.service.ArrangeService;
+import com.fasterxml.jackson.databind.util.BeanUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +30,15 @@ public class ArrangeServiceImpl implements ArrangeService {
 
     @Autowired
     ArrangeMapper arrangeMapper;
+
+    @Autowired
+    CourseDao courseDao;
+
+    @Autowired
+    UserDao userDao;
+
+    @Autowired
+    LaboratoryDao laboratoryDao;
 
     public List<Arrange> findAll() throws Exception {
         return arrangeDao.findAll();
@@ -119,12 +137,20 @@ public class ArrangeServiceImpl implements ArrangeService {
 
     /**
      * @author 白宝玉
-     * @param arrange
+     * @param dto
      * @return
      * @throws Exception
      */
     @Override
-    public List<Arrange> findByArrange(Arrange arrange) throws Exception {
-        return arrangeDao.findByArrange(arrange);
+    public List<Arrange> findByArrange(ArrangeDTO dto) throws Exception {
+        // 使用bean utils进行属性的复制
+        Arrange entity = new Arrange();
+        ArrangeConverter.dtoToEntity(dto, entity);
+        List<Arrange> arranges = arrangeDao.findByArrange(entity);
+        for (Arrange arrange : arranges) {
+            // 查找当中的属性
+        }
+        return null;
+
     }
 }

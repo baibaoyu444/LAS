@@ -3,8 +3,10 @@ package cn.las.controller;
 import cn.las.bean.entity.Arrange;
 import cn.las.bean.entity.Message;
 import cn.las.service.*;
+import com.fasterxml.jackson.databind.util.BeanUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -791,6 +793,7 @@ public class ArrangeController {
 
         // 遍历传递数据
         int i = 0;
+        Map<Integer, Object> errors = new HashMap<Integer, Object>();
         for (String key : maps.keySet()) {
             Map<String, Object> map = maps.get(key);
 
@@ -816,7 +819,7 @@ public class ArrangeController {
             arrange.setUserId(userId);
             arrange.setNumber(number);
             arrange.setClasses(classes);
-            arrange.setWeeks(weeks);
+            arrange.setWeek(weeks);
             arrange.setDay(day);
             arrange.setSection(section);
 
@@ -826,12 +829,15 @@ public class ArrangeController {
             } catch (Exception e) {
                 e.printStackTrace();
                 // 处理错误信息  对错误信息进行封装
-
-
+                errors.put(i, e.getMessage());
             }
 
             i++;
         }
+
+
+        BeanUtils.copyProperties("","");
+        if(!errors.isEmpty()) message.putData("errors", errors);
         return message;
     }
 

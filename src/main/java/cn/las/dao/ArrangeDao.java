@@ -17,23 +17,6 @@ import org.apache.ibatis.annotations.Select;
 public interface ArrangeDao {
 
     @Select("select * from arrange order by day, section")
-    @Results({
-            @Result(id = true, column = "id", property = "id"),
-            @Result(column = "laboratoryId", property = "laboratoryId"),
-            @Result(column = "userId", property = "userId"),
-            @Result(column = "courseId", property = "courseId"),
-            @Result(column = "week", property = "week"),
-            @Result(column = "day", property = "day"),
-            @Result(column = "section", property = "section"),
-            @Result(column = "number", property = "number"),
-            @Result(column = "status", property = "status"),
-            @Result(column = "userId", property = "user",
-                    one = @One(select = "cn.las.dao.UserDao.findUserInfoById")),
-            @Result(column = "laboratoryId", property = "laboratory",
-                    one = @One(select = "cn.las.dao.LaboratoryDao.findById")),
-            @Result(column = "courseId", property = "course",
-                    one = @One(select = "cn.las.dao.CourseDao.findCourseById"))
-    })
     List<Arrange> findAll() throws Exception;
 
     @Select("select * from arrange where userId in (select id from user where teacher=#{teacherName})")
@@ -204,23 +187,6 @@ public interface ArrangeDao {
                     " and classes like %#{classes}% " +
                     " </if> "+
             "</script>"
-    })
-    @Results({
-            @Result(id = true, column = "id", property = "id"),
-            @Result(column = "laboratoryId", property = "laboratoryId"),
-            @Result(column = "userId", property = "userId"),
-            @Result(column = "courseId", property = "courseId"),
-            @Result(column = "week", property = "week"),
-            @Result(column = "day", property = "day"),
-            @Result(column = "section", property = "section"),
-            @Result(column = "number", property = "number"),
-            @Result(column = "status", property = "status"),
-            @Result(column = "userId", property = "user",
-                    one = @One(select = "cn.las.dao.UserDao.findUserInfoById")),
-            @Result(column = "laboratoryId", property = "laboratory",
-                    one = @One(select = "cn.las.dao.LaboratoryDao.findById")),
-            @Result(column = "courseId", property = "course",
-                    one = @One(select = "cn.las.dao.CourseDao.findCourseById"))
     })
     List<Arrange> findByArrange(Arrange arrange) throws Exception;
 }
