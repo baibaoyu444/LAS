@@ -2,6 +2,7 @@ package cn.las.service.impl;
 
 import cn.las.bean.dto.ArrangeDTO;
 import cn.las.bean.entity.Course;
+import cn.las.bean.entity.User;
 import cn.las.controller.ArrangeController;
 import cn.las.converter.ArrangeConverter;
 import cn.las.dao.ArrangeDao;
@@ -17,6 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -137,20 +139,76 @@ public class ArrangeServiceImpl implements ArrangeService {
 
     /**
      * @author 白宝玉
-     * @param dto
+     * @param arrange
      * @return
      * @throws Exception
      */
     @Override
-    public List<Arrange> findByArrange(ArrangeDTO dto) throws Exception {
+    public List<ArrangeDTO> findByArrange(Arrange arrange) throws Exception {
         // 使用bean utils进行属性的复制
-        Arrange entity = new Arrange();
-        ArrangeConverter.dtoToEntity(dto, entity);
-        List<Arrange> arranges = arrangeDao.findByArrange(entity);
-        for (Arrange arrange : arranges) {
-            // 查找当中的属性
-        }
-        return null;
+        List<Arrange> arranges = arrangeDao.findByArrange(arrange);
+        List<ArrangeDTO> dtos = new ArrayList<ArrangeDTO>();
+        for (Arrange entity : arranges) {
+            // 进行属性的复制
+            ArrangeDTO arrangeDTO = new ArrangeDTO();
+            ArrangeConverter.entityToDto(entity, arrangeDTO);
 
+            System.out.println(arrangeDTO);
+            System.out.println(entity);
+
+            // 封装其他信息
+            Course course = courseDao.findCourseById(entity.getId());
+            Laboratory laboratory = laboratoryDao.findById(entity.getLaboratoryId());
+            User user = userDao.findUserInfoById(entity.getUserId());
+
+            arrangeDTO.setLaboratory(laboratory);
+            arrangeDTO.setUser(user);
+            arrangeDTO.setCourse(course);
+
+            dtos.add(arrangeDTO);
+        }
+        return dtos;
+    }
+
+    @Override
+    public void insertArrange(ArrangeDTO dto) throws Exception {
+        // 进行对象的转换和检查
+        List<Integer> weeks = dto.getWeeks();
+        int[] sections = dto.getSections();
+        String type = dto.getType();
+
+        for (int week : weeks) {
+            for (int section : sections) {
+                // arrange对象的封装a
+                Arrange entity = new Arrange();
+                ArrangeConverter.dtoToEntity(dto, entity);
+
+                // 封装其他属性（教室信息一会儿查询得到）
+                entity.setWeek(week);
+                entity.setSection(section);
+                List<Arrange> exist = arrangeDao.findByArrange(entity);
+
+                /**
+                 * 提示信息
+                 * 1、此类教室该时间段无空闲
+                 */
+
+                // 插入之前检查课程是不是存在，如果不存在，直接插入
+                if(type != null) {
+                    List<Laboratory> byType = laboratoryDao.findByType(type);
+                    for (Laboratory lab : byType) {
+                        entity.setLaboratoryId(lab.getId());
+                        List<Arrange> byArrange = arrangeDao.findByArrange(entity);
+                        if(byArrange == null || byArrange.size() == 0) {
+                            // 如果查询到有空闲课程，直接插入
+                            arrangeDao.insertArrange(entity);
+                            return;
+                        }
+                    }
+                }
+                // 如果存在，抛出异常给上级捕捉
+                throw new IllegalArgumentException("该时间段该类实验室无空闲");
+            }
+        }
     }
 }

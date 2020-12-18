@@ -1,14 +1,16 @@
 package cn.las.controller;
 
+import cn.las.bean.dto.ArrangeDTO;
 import cn.las.bean.entity.Arrange;
 import cn.las.bean.entity.Message;
+import cn.las.bean.enu.SectionEnum;
 import cn.las.service.*;
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,36 +79,36 @@ public class ArrangeController {
      * @param all
      * @return
      */
-    private List<Arrange> process(List<Arrange> all) {
+    private List<ArrangeDTO> process(List<ArrangeDTO> all) {
         // 进行排课数据的整理
-        List<Arrange> arranges = new ArrayList<Arrange>();
-        Arrange arrange = null;
-        for (Arrange arr : all) {
-            if (arrange == null) {
-                arrange = arr;
-                arr.setWeeks(new ArrayList<Integer>());
-                arr.getWeeks().add(arr.getWeek());
+        List<ArrangeDTO> dtos = new ArrayList<ArrangeDTO>();
+        ArrangeDTO arrangeDTO = null;
+        for (ArrangeDTO dto : all) {
+            if (arrangeDTO == null) {
+                arrangeDTO = dto;
+                arrangeDTO.setWeeks(new ArrayList<Integer>());
+                arrangeDTO.getWeeks().add(dto.getWeek());
                 continue;
             }
             // 确保数据是一致的
             if (
-                    arrange.getLaboratoryId() == arr.getLaboratoryId() &&
-                            arrange.getUserId() == arr.getUserId() &&
-                            arrange.getCourseId() == arr.getCourseId() &&
-                            arrange.getDay() == arr.getDay() &&
-                            arrange.getSection() == arr.getSection()
+                    arrangeDTO.getLaboratoryId() == dto.getLaboratoryId() &&
+                            arrangeDTO.getUserId() == dto.getUserId() &&
+                            arrangeDTO.getCourseId() == dto.getCourseId() &&
+                            arrangeDTO.getDay() == dto.getDay() &&
+                            arrangeDTO.getSection() == dto.getSection()
                           //  arrange.getClasses().equals(arr.getClasses())
             ) {
-                arrange.getWeeks().add(arr.getWeek());
+                arrangeDTO.getWeeks().add(dto.getWeek());
             } else {
-                arranges.add(arrange);
-                arr.setWeeks(new ArrayList<Integer>());
-                arr.getWeeks().add(arr.getWeek());
-                arrange = arr;
+                dtos.add(dto);
+                dto.setWeeks(new ArrayList<Integer>());
+                dto.getWeeks().add(dto.getWeek());
+                arrangeDTO = dto;
             }
         }
-        arranges.add(arrange);
-        return arranges;
+        dtos.add(arrangeDTO);
+        return dtos;
     }
 
     /**
@@ -115,26 +117,26 @@ public class ArrangeController {
      * @param list
      * @return
      */
-    private List<Arrange>[][] getCourseList(List<Arrange> list) {
+    private List<ArrangeDTO>[][] getCourseList(List<ArrangeDTO> list) {
 
         // 对传入的list进行遍历
-        for(Arrange arrange : list) {
-            System.out.println(arrange);
+        for(ArrangeDTO dto : list) {
+            System.out.println(dto);
         }
 
-        List<Arrange> [][] arrs = new ArrayList[6][7];
-        for (Arrange arr : list) {
-            if (arr != null) {
-                int day = arr.getDay() - 1;
-                int section = arr.getSection() - 1;
+        List<ArrangeDTO> [][] arrs = new ArrayList[6][7];
+        for (ArrangeDTO dto : list) {
+            if (dto != null) {
+                int day = dto.getDay() - 1;
+                int section = dto.getSection() - 1;
                 if (arrs[section][day] == null) {
-                    arrs[section][day] = new ArrayList<Arrange>();
-                    arrs[section][day].add(arr);
+                    arrs[section][day] = new ArrayList<ArrangeDTO>();
+                    arrs[section][day].add(dto);
                     continue;
                 }
 
                 // 如果存在，直接插入
-                arrs[section][day].add(arr);
+                arrs[section][day].add(dto);
             }
         }
 
@@ -155,9 +157,9 @@ public class ArrangeController {
             value = "查询所有排课"
     )
     public Message findAll() throws Exception {
-        List<Arrange> all = null;
+        List<ArrangeDTO> all = null;
         try {
-            all = arrangeService.findAll();
+            all = arrangeService.findByArrange(new Arrange());
         } catch (Exception e) {
             e.printStackTrace();
             return new Message(205, "获取排课信息失败");
@@ -167,8 +169,8 @@ public class ArrangeController {
             return new Message(201, "不存在任何课程");
         }
 
-        List<Arrange> process = process(all);
-        List<Arrange>[][] courseList = getCourseList(process);
+        List<ArrangeDTO> process = process(all);
+        List<ArrangeDTO>[][] courseList = getCourseList(process);
 
         Message message = new Message(200, "获取排课信息成功");
         message.putData("arranges", courseList);
@@ -217,42 +219,6 @@ public class ArrangeController {
 
         return message;
     }
-
-    /**
-     * @param courseId 课程id
-     * @return  返回成功 | 失败信息
-     * @throws Exception
-     *
-     * 删除选课信息根据课程id
-     *
-     * 接口存在问题 - 考虑不够详细或者存在错误
-     */
-//    @RequestMapping(value = "deleteArrangeByCourseId", method = RequestMethod.POST)
-//    @ResponseBody
-//    @ApiIgnore
-//    public Message deleteArrangeById(@RequestParam int courseId)throws Exception{
-//
-//        List<Arrange> all = null;
-//        try {
-//            all = arrangeService.findArrangeByCourseId(courseId);
-//        }catch (Exception e){
-//            e.printStackTrace();
-//            return new Message(207, "查询此课程的排课情况失败");
-//        }
-//
-//        if(all == null){
-//            return new Message(204, "没有此课程的排课情况");
-//        }
-//
-//        try {
-//            arrangeService.deleteArrangeByCourseId(courseId);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return new Message(208, "删除此课程排课信息失败");
-//        }
-//
-//        return new Message(200, "删除课程成功");
-//    }
 
     /**
      * @param map1
@@ -308,9 +274,9 @@ public class ArrangeController {
     public Message findArrangeByLaboratoryId(@RequestBody Map<String, Object> maps)throws Exception{
         int id = (Integer) maps.get("laboratoryId");
         int week = (Integer) maps.get("week");
-        List<Arrange> all = null;
+        List<ArrangeDTO> all = null;
         try {
-            all = arrangeService.findArrangeByLaboratoryId(id,week);
+//            all = arrangeService.findArrangeByLaboratoryId(id,week);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return new Message(205, "查询此实验室的排课情况失败");
@@ -321,57 +287,13 @@ public class ArrangeController {
         }
 
 
-        List<Arrange> process = process(all);
-        List<Arrange>[][] courseList = getCourseList(process);
+        List<ArrangeDTO> process = process(all);
+        List<ArrangeDTO>[][] courseList = getCourseList(process);
 
         Message message = new Message(200, "获取排课信息成功");
         message.putData("arranges",courseList);
         return message;
     }
-
-
-    /**
-     * @param weeks 教学周数
-     * @return  返回带有某实验室排课arranges的message
-     * @throws Exception
-     *
-     * 根据教学周查询排课情况（可能不需要，先保留）
-     */
-//    @RequestMapping(value = "findArrangeByweek", method = RequestMethod.GET)
-//    @ResponseBody
-//    @ApiIgnore
-//    public Message findArrangeByweek(@RequestParam int weeks)throws Exception{
-//        Message message = new Message();
-//
-//        List<Arrange> all = null;
-//        try {
-//            all = arrangeService.findAll();
-//        }catch (Exception e){
-//            message.setCode(206);
-//            message.setMessage("获取排课信息失败");
-//            return message;
-//        }
-//        List<Arrange> some = new ArrayList<Arrange>();
-//
-//        for(Arrange s : all){
-//            int week = s.getWeek();
-//            if(Arrays.asList(week).contains(weeks))
-//                some.add(s);
-//        }
-//
-//        if (some.isEmpty()){
-//            message.setCode(210);
-//            message.setMessage("当前周没有任何排课");
-//            return message;
-//        }
-//
-//        message.setCode(200);
-//        message.putData("findArrangeByweek",some);
-//        message.setMessage("获取当前周排课成功");
-//
-//        return message;
-//    }
-
 
     /**
      * @param maps
@@ -447,186 +369,6 @@ public class ArrangeController {
         return message;
     }
 
-
-    /**
-     * @param maps
-     * {
-     *     userId:...,
-     *     labId:...,
-     *     courseId:...,
-     *     classIds:...,
-     *     weeks:...,
-     *     days:...,
-     *     sections:...
-     * }
-     * @return
-     *
-     * 1、根据给出的排课信息进行课程的增加
-     * 2、需要考虑的情况
-     *      1) 参数的非空验证
-     *      2) 课程是否冲突查询 ==  如果冲突返回错误信息并且返回冲突数据
-     * 3、生成排课信息
-     *
-     * 本接口可谓是最强接口
-     *
-     * 测试未通过--白宝玉
-     *
-     * 仍需改进
-     */
-//    @RequestMapping(value = "addArrange", method = RequestMethod.POST)
-//    @ResponseBody
-//    @Transactional(rollbackFor = Exception.class)
-//    @ApiOperation(
-//            httpMethod = "POST",
-//            notes = "添加课程安排接口</br>"+
-//                    "输入JSON数据: {</br>" +
-//                    "    \"userId\": 3,</br>" +
-//                    "    \"courseId\": 3,</br>" +
-//                    "    \"labId\":4,</br>" +
-//                    "    \"classIds\":[1,2],</br>" +
-//                    "    \"weeks\":[1,2,3],</br>" +
-//                    "    \"days\":[3,4,5],</br>" +
-//                    "    \"sections\":[5]</br>" +
-//                    "}",
-//            value = "添加课程安排接口"
-//    )
-//    public Message addArrange(@RequestBody Map<String, Object> maps) {
-//
-//        //获取参数信息
-//        List<Integer> weeks = (List<Integer>) maps.get("weeks");
-//        List<Integer> days = (List<Integer>) maps.get("days");
-//        List<Integer> sections = (List<Integer>) maps.get("sections");
-//        Integer userId = (Integer) maps.get("userId");
-//        Integer courseId = (Integer) maps.get("courseId");
-//        Integer laboratoryId = (Integer) maps.get("labId");
-//        Integer number = (Integer) maps.get("number");
-//        Integer status = (Integer) maps.get("status");
-//
-//        //非空验证
-//        if(
-//                weeks == null || days == null || sections == null ||
-//                userId == null || courseId == null || laboratoryId == null
-//        ) {
-//            return new Message(403, "参数不能为空");
-//        }
-//
-//        // 检查教室是否可用
-//        try {
-//            Laboratory laboratory = laboratoryService.findById(laboratoryId);
-//            if(laboratory == null) {
-//                return new Message(601, "教室不存在");
-//            }
-//
-//            if(laboratory.getStatus() == 0) {
-//                return new Message(602, "教室不可用");
-//            }
-//
-//            // 判断用户和课程的信息是否存在
-//            Course course = courseService.findCourseById(courseId);
-//            if(course == null) return new Message(604, "课程不存在");
-//
-//            // 检查用户是否存在
-//            User user = userService.findUserInfoById(userId);
-//            if(user == null) return new Message(605, "用户信息不存在");
-//
-//            // 进行课程的生成
-//            List<Arrange> conflicts = new ArrayList<Arrange>();
-//            List<Arrange> arranges = new ArrayList<Arrange>();
-//
-//            boolean permitAdd = true;
-//            for (Integer week : weeks) {
-//                for (Integer day : days) {
-//                    for (Integer section : sections) {
-//                        // 检查时间段是否可用
-//                        List<Arrange> arr = arrangeService.findArrangeByWeekAndDayAndSection(week, day, section);
-//                        if(arr != null) {
-//                            conflicts.addAll(arr);
-//                            permitAdd = false;
-//                        }
-//
-//                        // 当不允许插入数据的时候，就不需要继续了
-//                        if(!permitAdd) continue;
-//                        Arrange arrange = new Arrange();
-//                        arrange.setLaboratoryId(laboratoryId);
-//                        arrange.setCourseId(courseId);
-//                        arrange.setUserId(userId);
-//                        arrange.setWeek(week);
-//                        arrange.setDay(day);
-//                        arrange.setSection(section);
-//                        arranges.add(arrange);
-//                        arrange.setNumber(number);
-//                        arrange.setStatus(status);
-//                    }
-//                }
-//            }
-//
-//            // 检查是否存在冲突
-//            if(conflicts.size() != 0) {
-//                Message message = new Message(606, "时间段存在冲突");
-//                message.putData("conflicts", conflicts);
-//                return message;
-//            }
-//
-//            // 否则直接添加排课
-//            for (Arrange arrange : arranges) {
-//                arrangeService.insertArrange(arrange);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            // 基本这里的错误都是系统的错误了
-//            return new Message(500, "服务器出错");
-//        }
-//
-//        return new Message(200, "增加排课信息成功");
-//    }
-
-    /**
-     * @param maps
-     * {
-     *     weeks:...,
-     *     day:...
-     * }
-     * @return
-     *
-     * 查询某几周的某一天可用的时间段，查询全部的这几周可用时间段
-     *
-     * 测试已通过--白宝玉
-     */
-//    @RequestMapping(value = "findSectionsByWD", method = RequestMethod.GET)
-//    @ResponseBody
-//    @ApiOperation(
-//            httpMethod = "GET",
-//            notes = "查询可用时间段By周数|周几</br>"+
-//                    "输入JSON数据: {\"weeks\":[1,2,3,4],\"day\":1}",
-//            value = "查询可用时间段By周数|周几"
-//    )
-//    public Message findEnableSectionsByWeeksAndDay(@RequestBody Map<String, Object> maps) {
-//
-//
-//        // 获取数据
-//        List<Integer> weeks = (List<Integer>) maps.get("weeks");
-//        Integer day = (Integer) maps.get("day");
-//        String type = (String) maps.get("type");
-//
-//        //非空验证
-//        if(weeks == null || day == null || type.equals("")) {
-//            return new Message(403, "参数非空");
-//        }
-//
-//        // 进行可用时间段查询
-//        try {
-//            Set<Integer> sections = arrangeService.findSectionsByWeeksAndDay(weeks, day, type);
-//            Message message = new Message(200, "查询成功");
-//            message.putData("sections", sections);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return new Message(500, "获取空闲时间段错误");
-//        }
-//
-//
-//        return new Message(200, "查询成功");
-//    }
-
     /**
      * @param maps
      * {
@@ -701,10 +443,10 @@ public class ArrangeController {
         if(userId == null|| week == null ) return new Message(403, "参数不全");
 
 
-        List<Arrange> arranges = arrangeService.findArrangeByUserId(userId,week);
-        List<Arrange> process = process(arranges);
-        List<Arrange>[][] courseList = getCourseList(process);
-        message.putData("arranges", courseList);
+//        List<ArrangeDTO> arranges = arrangeService.findArrangeByUserId(userId,week);
+//        List<ArrangeDTO> process = process(arranges);
+//        List<ArrangeDTO>[][] courseList = getCourseList(process);
+//        message.putData("arranges", courseList);
         return message;
     }
 
@@ -725,7 +467,7 @@ public class ArrangeController {
     )
     public Message find(@RequestBody Arrange arrange) {
 
-        List<Arrange> list = null;
+        List<ArrangeDTO> list = null;
         try {
             list = arrangeService.findByArrange(arrange);
         } catch (Exception e) {
@@ -757,7 +499,7 @@ public class ArrangeController {
     public Message findByIdAndWeek(@RequestBody Arrange arrange) {
 
         System.out.println(arrange);
-        List<Arrange> list = null;
+        List<ArrangeDTO> list = null;
         try {
             list = arrangeService.findByArrange(arrange);
         } catch (Exception e) {
@@ -766,8 +508,8 @@ public class ArrangeController {
         }
 
         // 进行数据封装
-        List<Arrange> process = process(list);
-        List<Arrange>[][] courseList = getCourseList(process);
+        List<ArrangeDTO> process = process(list);
+        List<ArrangeDTO>[][] courseList = getCourseList(process);
         Message message = new Message(200, "获取数据成功");
         message.putData("arranges", courseList);
         return message;
@@ -789,7 +531,6 @@ public class ArrangeController {
             value = "按照用户id和周数week获取个人排课信息"
     )
     public Message insertManyArrange(@RequestBody Map<String, Map<String, Object>> maps) {
-        Message message = new Message(200, "访问接口成功");
 
         // 遍历传递数据
         int i = 0;
@@ -806,7 +547,7 @@ public class ArrangeController {
              */
             Integer courseId = (Integer) map.get("courseId");
             Integer userId = (Integer) map.get("userId");
-            Integer number  = (Integer) map.get("number");
+            Integer number = (Integer) map.get("number");
             String classes = (String) map.get("classes");
             String type = (String) map.get("type");
             List<Integer> weeks = (List<Integer>) map.get("weeks");
@@ -814,35 +555,47 @@ public class ArrangeController {
             Integer section = (Integer) map.get("section");
 
             // 新增课程封装
-            Arrange arrange = new Arrange();
-            arrange.setCourseId(courseId);
-            arrange.setUserId(userId);
-            arrange.setNumber(number);
-            arrange.setClasses(classes);
-            arrange.setWeek(weeks);
-            arrange.setDay(day);
-            arrange.setSection(section);
+            ArrangeDTO dto = new ArrangeDTO();
+            dto.setCourseId(courseId);
+            dto.setUserId(userId);
+            dto.setNumber(number);
+            dto.setClassList(Arrays.asList(classes.split(" ")));
+            dto.setWeeks(weeks);
+            dto.setDay(day);
+            dto.setType(type);
 
+            // 封装节数
+            int [] sections = SectionEnum.parse(section);
+            dto.setSections(sections);
+
+            // 新增课程校验
             try {
-                // 新增课程校验
-                arrangeService.insertArrange(arrange);
+                arrangeService.insertArrange(dto);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                errors.put(i, e.getMessage());
             } catch (Exception e) {
                 e.printStackTrace();
-                // 处理错误信息  对错误信息进行封装
-                errors.put(i, e.getMessage());
+                return new Message(500, "服务器错误");
             }
-
             i++;
         }
 
+        if (!errors.isEmpty()) {
+            Message message = new Message(403, "存在冲突");
+            message.putData("errors", errors);
+            return message;
+        }
 
-        BeanUtils.copyProperties("","");
-        if(!errors.isEmpty()) message.putData("errors", errors);
+        Message message = new Message(200, "访问接口成功");
         return message;
     }
 
 
+    @RequestMapping(value = "/updateArrangeBy", method = RequestMethod.PUT)
+    @ResponseBody
+    public Message updateArrangeBy(@RequestBody Map<String, Object> maps) {
 
-
-
+        return null;
+    }
 }

@@ -1,8 +1,5 @@
 package cn.las.bean.vo;
 
-import cn.las.bean.entity.Course;
-import cn.las.bean.entity.Laboratory;
-import cn.las.bean.entity.User;
 import lombok.Data;
 
 import java.util.List;
@@ -11,11 +8,17 @@ import java.util.List;
 public class ArrangeVO {
     private Integer id;
 
-    private Laboratory laboratory;
+    private Integer laboratoryId;
 
-    private User user;
+    private Integer userId;
 
-    private Course course;
+    private Integer courseId;
+
+    private String courseName;
+
+    private String labName;
+
+    private String userName;
 
     private Integer week;
 
@@ -27,5 +30,5 @@ public class ArrangeVO {
 
     private Integer status;
 
-    private List<String> classes;
+    private List<String> classList;
 }

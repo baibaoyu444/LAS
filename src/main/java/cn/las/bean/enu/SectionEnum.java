@@ -22,23 +22,7 @@ public enum SectionEnum {
         this.sections = sections;
     }
 
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public int[] getSections() {
-        return sections;
-    }
-
-    public void setSections(int[] sections) {
-        this.sections = sections;
-    }
-
-    public int [] parse(int code) {
+    public static int [] parse(int code) {
         for (SectionEnum sectionEnum: SectionEnum.values()) {
             if(sectionEnum.code == code) {
                 return sectionEnum.sections;

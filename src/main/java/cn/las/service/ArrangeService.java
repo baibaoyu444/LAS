@@ -77,5 +77,7 @@ public interface ArrangeService {
 
 
 
-    List<Arrange> findByArrange(ArrangeDTO dto) throws Exception;
+    List<ArrangeDTO> findByArrange(Arrange arrange) throws Exception;
+
+    void insertArrange(ArrangeDTO dto) throws Exception;
 }

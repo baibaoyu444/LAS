@@ -162,25 +162,25 @@ public interface ArrangeDao {
     @Select({
             "<script>"+
             "select * from arrange where 1=1 " +
-                    " <if test='laboratoryId != 0'> " +
+                    " <if test='laboratoryId != null'> " +
                     " and laboratoryId = #{laboratoryId} " +
                     " </if> " +
-                    " <if test='courseId != 0'> " +
+                    " <if test='courseId != null'> " +
                     " and courseId = #{courseId} " +
                     " </if> " +
-                    " <if test='userId != 0'> " +
+                    " <if test='userId != null'> " +
                     " and userId = #{userId} " +
                     " </if> " +
-                    " <if test='week != 0'> " +
+                    " <if test='week != null'> " +
                     " and week = #{week} " +
                     " </if> " +
-                    " <if test='day != 0'> " +
+                    " <if test='day != null'> " +
                     " and day = #{day} " +
                     " </if> " +
-                    " <if test='section != 0'> " +
+                    " <if test='section != null'> " +
                     " and section = #{section} " +
                     " </if> " +
-                    " <if test='number != 0'> " +
+                    " <if test='number != null'> " +
                     " and section = #{number} " +
                     " </if> " +
                     " <if test='classes != null'> " +
@@ -189,4 +189,9 @@ public interface ArrangeDao {
             "</script>"
     })
     List<Arrange> findByArrange(Arrange arrange) throws Exception;
+
+    @Insert("insert into arrange " +
+            "(laboratoryId, userId, courseId, week, day, section, number, status, classes) " +
+            "values(#{laboratoryId},#{userId},#{courseId},#{week},#{day},#{section},#{number},#{status},#{classes})")
+    void insertArrange(Arrange arrange) throws Exception;
 }
