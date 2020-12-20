@@ -3,8 +3,6 @@ package cn.las.service.impl;
 import cn.las.bean.dto.ArrangeDTO;
 import cn.las.bean.entity.Course;
 import cn.las.bean.entity.User;
-import cn.las.controller.ArrangeController;
-import cn.las.converter.ArrangeConverter;
 import cn.las.dao.ArrangeDao;
 import cn.las.bean.entity.Arrange;
 import cn.las.bean.entity.Laboratory;
@@ -13,8 +11,7 @@ import cn.las.dao.LaboratoryDao;
 import cn.las.dao.UserDao;
 import cn.las.mapper.ArrangeMapper;
 import cn.las.service.ArrangeService;
-import com.fasterxml.jackson.databind.util.BeanUtil;
-import org.springframework.beans.BeanUtils;
+import com.sun.org.apache.bcel.internal.generic.FSUB;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,8 +39,8 @@ public class ArrangeServiceImpl implements ArrangeService {
     @Autowired
     LaboratoryDao laboratoryDao;
 
-    public List<Arrange> findAll() throws Exception {
-        return arrangeDao.findAll();
+    public List<ArrangeDTO> findAll() throws Exception {
+        return arrangeMapper.findAll();
     }
 
     public void deleteArrangeByCourseId(int courseId)throws Exception{
@@ -137,8 +134,28 @@ public class ArrangeServiceImpl implements ArrangeService {
     }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      * @author 白宝玉
+     *
+     * 按照Arrange查询排课信息
+     *
      * @param arrange
      * @return
      * @throws Exception
@@ -146,68 +163,105 @@ public class ArrangeServiceImpl implements ArrangeService {
     @Override
     public List<ArrangeDTO> findByArrange(Arrange arrange) throws Exception {
         // 使用bean utils进行属性的复制
-        List<Arrange> arranges = arrangeDao.findByArrange(arrange);
-        List<ArrangeDTO> dtos = new ArrayList<ArrangeDTO>();
-        for (Arrange entity : arranges) {
-            // 进行属性的复制
-            ArrangeDTO arrangeDTO = new ArrangeDTO();
-            ArrangeConverter.entityToDto(entity, arrangeDTO);
-
-            System.out.println(arrangeDTO);
-            System.out.println(entity);
-
-            // 封装其他信息
-            Course course = courseDao.findCourseById(entity.getId());
-            Laboratory laboratory = laboratoryDao.findById(entity.getLaboratoryId());
-            User user = userDao.findUserInfoById(entity.getUserId());
-
-            arrangeDTO.setLaboratory(laboratory);
-            arrangeDTO.setUser(user);
-            arrangeDTO.setCourse(course);
-
-            dtos.add(arrangeDTO);
-        }
-        return dtos;
+        List<ArrangeDTO> arranges = arrangeMapper.findByArrange(arrange);
+        return arranges;
     }
 
     @Override
     public void insertArrange(ArrangeDTO dto) throws Exception {
-        // 进行对象的转换和检查
+        // 提取dto数据
         List<Integer> weeks = dto.getWeeks();
-        int[] sections = dto.getSections();
+        List<Integer> sections = dto.getSections();
+        Integer day = dto.getDay();
         String type = dto.getType();
+        Integer userId = dto.getUserId();
+        Integer courseId = dto.getCourseId();
+        String classes = dto.getClassList().toString().replaceAll(", ", ",");
+        classes = classes.substring(1, classes.length() - 1);
+        Double period = dto.getPeriod();
+        Integer number = dto.getNumber();
+        Integer tag = arrangeDao.findMaxTag() + 1;
 
         for (int week : weeks) {
             for (int section : sections) {
                 // arrange对象的封装a
                 Arrange entity = new Arrange();
-                ArrangeConverter.dtoToEntity(dto, entity);
 
-                // 封装其他属性（教室信息一会儿查询得到）
+                // 封装其他属性（周数，星期，节次，实验室id）用于检验冲突
                 entity.setWeek(week);
                 entity.setSection(section);
-                List<Arrange> exist = arrangeDao.findByArrange(entity);
+                entity.setDay(day);
 
                 /**
                  * 提示信息
                  * 1、此类教室该时间段无空闲
+                 * 2、教师课程已存在
                  */
 
+                /**
+                 * 课程冲突检查流程
+                 * 周次 + 星期 + 时间 + 教室 是否冲突
+                 * 如果冲突
+                 *      教师的userId是否相同
+                 *          不相同 - 教室该时间段被占用
+                 *          相同 - 教师课程已存在
+                 * 没有冲突
+                 *      进行教室的安排
+                 *
+                 * 一个教师 同一时间段不能安排多场课--等待考虑
+                 */
                 // 插入之前检查课程是不是存在，如果不存在，直接插入
-                if(type != null) {
-                    List<Laboratory> byType = laboratoryDao.findByType(type);
-                    for (Laboratory lab : byType) {
-                        entity.setLaboratoryId(lab.getId());
-                        List<Arrange> byArrange = arrangeDao.findByArrange(entity);
-                        if(byArrange == null || byArrange.size() == 0) {
-                            // 如果查询到有空闲课程，直接插入
-                            arrangeDao.insertArrange(entity);
-                            return;
+                List<Laboratory> byType = null;
+                if(type == null) {
+                    byType = laboratoryDao.findAll();
+                } else {
+                    byType = laboratoryDao.findByType(type);
+                }
+
+                // 匹配实验室
+                for (Laboratory lab : byType) {
+                    // 如果实验室是不可用的
+                    if(lab.getStatus() == 0) continue;
+
+                    // 如果实验室是可用的
+                    entity.setLaboratoryId(lab.getId());
+                    List<ArrangeDTO> byArrange = arrangeMapper.findByArrange(entity);
+                    if(byArrange == null || byArrange.size() == 0) {
+                        // 如果查询到有空闲课程，直接插入
+
+
+                        entity.setCourseId(courseId);
+                        entity.setUserId(userId);
+                        entity.setNumber(number);
+                        entity.setStatus(1);
+                        entity.setClasses(classes);
+                        entity.setTag(tag);
+                        entity.setPeriod(period);
+
+                        System.out.println(dto);
+                        System.out.println(entity);
+                        arrangeDao.insertArrange(entity);
+                        break;
+                    }
+
+                    // 查询冲突课程是不是教师课程
+                    boolean belongUser = false;
+                    for (ArrangeDTO arrange : byArrange) {
+                        if(arrange.getUserId().equals(userId)) {
+                            belongUser = true;
+                            break;
                         }
                     }
+
+                    if(!belongUser) {
+                        StringBuffer buffer = new StringBuffer("存在错误: ");
+                        buffer.append("课程: ").append(courseId).append(" ");
+                        buffer.append("周数: ").append(week).append(" ");
+                        buffer.append("星期: ").append(day).append(" ");
+                        buffer.append("节次: ").append(section).append(" 此类型教师此时间段无空闲, 请另选时段或更换教室类型");
+                        throw new IllegalArgumentException(buffer.toString());
+                    }
                 }
-                // 如果存在，抛出异常给上级捕捉
-                throw new IllegalArgumentException("该时间段该类实验室无空闲");
             }
         }
     }

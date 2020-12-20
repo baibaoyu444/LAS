@@ -2,25 +2,25 @@ package cn.las.dao;
 
 import cn.las.bean.entity.Arrange;
 import cn.las.bean.entity.Laboratory;
+import com.mysql.cj.x.protobuf.MysqlxDatatypes;
 import org.apache.ibatis.annotations.*;
-
-
-import java.util.List;
-import java.util.Set;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * 排课持久层
  */
 public interface ArrangeDao {
 
-    @Select("select * from arrange order by day, section")
+    @Select("select * from arrange group by tag")
     List<Arrange> findAll() throws Exception;
 
     @Select("select * from arrange where userId in (select id from user where teacher=#{teacherName})")
-    List<Arrange> findByTeacherName(String teacherName) throws Exception;
+    List<Arrange> findByTeacherName(MysqlxDatatypes.Scalar.String teacherName) throws Exception;
 
     @Select("select * from arrange where laboratoryId=#{laboratoryId} and week=#{week}")
     List<Arrange> findByLaboratoryId(@Param("laboratoryId") int laboratoryId,@Param("week") int week) throws Exception;
@@ -159,39 +159,11 @@ public interface ArrangeDao {
     @Delete("delete from arrange where laboratoryId=#{laboratoryId}")
     void removeByLaboratoryId(Integer laboratoryId) throws Exception;
 
-    @Select({
-            "<script>"+
-            "select * from arrange where 1=1 " +
-                    " <if test='laboratoryId != null'> " +
-                    " and laboratoryId = #{laboratoryId} " +
-                    " </if> " +
-                    " <if test='courseId != null'> " +
-                    " and courseId = #{courseId} " +
-                    " </if> " +
-                    " <if test='userId != null'> " +
-                    " and userId = #{userId} " +
-                    " </if> " +
-                    " <if test='week != null'> " +
-                    " and week = #{week} " +
-                    " </if> " +
-                    " <if test='day != null'> " +
-                    " and day = #{day} " +
-                    " </if> " +
-                    " <if test='section != null'> " +
-                    " and section = #{section} " +
-                    " </if> " +
-                    " <if test='number != null'> " +
-                    " and section = #{number} " +
-                    " </if> " +
-                    " <if test='classes != null'> " +
-                    " and classes like %#{classes}% " +
-                    " </if> "+
-            "</script>"
-    })
-    List<Arrange> findByArrange(Arrange arrange) throws Exception;
-
     @Insert("insert into arrange " +
             "(laboratoryId, userId, courseId, week, day, section, number, status, classes) " +
             "values(#{laboratoryId},#{userId},#{courseId},#{week},#{day},#{section},#{number},#{status},#{classes})")
     void insertArrange(Arrange arrange) throws Exception;
+
+    @Select("select MAX(tag) from arrange")
+    Integer findMaxTag() throws Exception;
 }

@@ -38,4 +38,84 @@
     <update id="updateArrangeById">
 
     </update>
+
+    <select id="findAll" resultMap="arrangeDtoMap">
+        select * from arrange group by tag
+    </select>
+
+    <!--  通过week和userid查询课表  -->
+    <select id="findByArrange" resultMap="arrangeDtoMap">
+        select * from arrange where 1=1
+        <if test="laboratoryId != null">
+            and laboratoryId = #{laboratoryId}
+        </if>
+
+        <if test="courseId != null">
+            and courseId = #{courseId}
+        </if>
+
+        <if test="userId != null">
+            and userId = #{userId}
+        </if>
+
+        <if test="week != null">
+            and week = #{week}
+        </if>
+
+        <if test="day != null">
+            and day = #{day}
+        </if>
+
+        <if test="section != null">
+            and section = #{section}
+        </if>
+
+        <if test="number != null">
+            and number = #{number}
+        </if>
+
+        <if test="classes != null">
+            and classes = #{classes}
+        </if>
+        group by tag
+    </select>
+
+    <resultMap id="arrangeDtoMap" type="cn.las.bean.dto.ArrangeDTO">
+        <result column="laboratoryId" property="laboratoryId"></result>
+        <result column="userId" property="userId"></result>
+        <result column="courseId" property="courseId"></result>
+        <result column="day" property="day"></result>
+        <result column="number" property="number"></result>
+        <result column="status" property="status"></result>
+        <result column="tag" property="tag"></result>
+        <result column="period" property="period"></result>
+        <result column="classes" property="classes"></result>
+        <collection property="weeks" column="tag"
+                    select="cn.las.mapper.ArrangeMapper.findWeeksByTag">
+        </collection>
+        <collection property="sections" column="tag"
+                    select="cn.las.mapper.ArrangeMapper.findSectionsByTag">
+        </collection>
+        <collection property="laboratory" column="laboratoryId"
+                    select="cn.las.dao.LaboratoryDao.findById">
+        </collection>
+        <collection property="course" column="courseId"
+                    select="cn.las.dao.CourseDao.findCourseById">
+        </collection>
+        <collection property="user" column="userId"
+                    select="cn.las.dao.UserDao.findUserInfoById"></collection>
+    </resultMap>
+
+    <!--  通过tag查询周数  -->
+    <select id="findWeeksByTag" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select week from arrange where tag = #{tag}
+    </select>
+
+    <!--  通过tag查询课程  -->
+    <select id="findSectionsByTag" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select `section` from arrange where tag = #{tag}
+    </select>
+
+
+
 </mapper>

@@ -10,7 +10,7 @@ import java.util.Set;
 
 public interface ArrangeService {
 
-    List<Arrange> findAll() throws Exception;
+    List<ArrangeDTO> findAll() throws Exception;
 
     //根据课程号删除排课
     void deleteArrangeByCourseId(@Param("courseId") int courseId)throws Exception;

@@ -36,4 +36,8 @@ public class Arrange {
     private Integer status;
 
     private String classes;
+
+    private Integer tag;
+
+    private Double period;
 }

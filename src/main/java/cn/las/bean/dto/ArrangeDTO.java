@@ -11,7 +11,6 @@ import java.util.List;
 @Data
 @ToString
 public class ArrangeDTO {
-    private Integer id;
 
     private Integer laboratoryId;
 
@@ -19,27 +18,29 @@ public class ArrangeDTO {
 
     private Integer courseId;
 
+    private List<Integer> weeks;
+
+    private Integer day;
+
+    private List<Integer> sections;
+
+    private Integer number;
+
+    private Integer status;
+
+    private String classes;
+
+    private String type;
+
+    private String tag;
+
+    private Double period;
+
     private Laboratory laboratory;
 
     private User user;
 
     private Course course;
 
-    private Integer week;
-
-    private Integer day;
-
-    private Integer section;
-
-    private Integer number;
-
-    private Integer status;
-
     private List<String> classList;
-
-    private List<Integer> weeks;
-
-    private int[] sections;
-
-    private String type;
 }
