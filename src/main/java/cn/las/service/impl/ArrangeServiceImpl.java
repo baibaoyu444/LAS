@@ -1,8 +1,7 @@
 package cn.las.service.impl;
 
 import cn.las.bean.dto.ArrangeDTO;
-import cn.las.bean.entity.Course;
-import cn.las.bean.entity.User;
+import cn.las.bean.enu.SectionEnum;
 import cn.las.dao.ArrangeDao;
 import cn.las.bean.entity.Arrange;
 import cn.las.bean.entity.Laboratory;
@@ -11,11 +10,9 @@ import cn.las.dao.LaboratoryDao;
 import cn.las.dao.UserDao;
 import cn.las.mapper.ArrangeMapper;
 import cn.las.service.ArrangeService;
-import com.sun.org.apache.bcel.internal.generic.FSUB;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,10 +42,6 @@ public class ArrangeServiceImpl implements ArrangeService {
 
     public void deleteArrangeByCourseId(int courseId)throws Exception{
         arrangeMapper.deleteById(courseId);
-    }
-
-    public void insertone(Arrange arrange)throws Exception{
-        arrangeMapper.insertone(arrange);
     }
 
     public void updateArrangeById(int id, int week, int day, int section)throws Exception{
@@ -170,8 +163,9 @@ public class ArrangeServiceImpl implements ArrangeService {
     @Override
     public void insertArrange(ArrangeDTO dto) throws Exception {
         // 提取dto数据
-        List<Integer> weeks = dto.getWeeks();
-        List<Integer> sections = dto.getSections();
+        Set<Integer> weeks = dto.getWeeks();
+        Integer sectionEnum = dto.getSectionEnum();
+        int[] sections = SectionEnum.parse(sectionEnum);
         Integer day = dto.getDay();
         String type = dto.getType();
         Integer userId = dto.getUserId();
@@ -237,6 +231,7 @@ public class ArrangeServiceImpl implements ArrangeService {
                         entity.setClasses(classes);
                         entity.setTag(tag);
                         entity.setPeriod(period);
+                        entity.setSectionEnum(sectionEnum);
 
                         System.out.println(dto);
                         System.out.println(entity);
@@ -264,5 +259,10 @@ public class ArrangeServiceImpl implements ArrangeService {
                 }
             }
         }
+    }
+
+    @Override
+    public void deleteByTag(Integer tag) throws Exception {
+        arrangeDao.removeByTag(tag);
     }
 }

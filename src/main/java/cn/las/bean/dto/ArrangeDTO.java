@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @ToString
@@ -18,11 +19,11 @@ public class ArrangeDTO {
 
     private Integer courseId;
 
-    private List<Integer> weeks;
+    private Set<Integer> weeks;
 
     private Integer day;
 
-    private List<Integer> sections;
+    private Set<Integer> sections;
 
     private Integer number;
 
@@ -43,4 +44,6 @@ public class ArrangeDTO {
     private Course course;
 
     private List<String> classList;
+
+    private Integer sectionEnum;
 }

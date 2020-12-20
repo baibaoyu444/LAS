@@ -14,8 +14,6 @@ public interface ArrangeMapper {
 
     void updateArrangeById(@Param("id") int id, @Param("week") int week, @Param("day") int day, @Param("section") int section)throws Exception;
 
-    void insertone(Arrange arrange)throws Exception;
-
     List<Arrange> findArrangeByLaboratoryId(@Param("laboratoryId") int laboratoryId)throws Exception;
 
     List<Arrange> findArrangeByCourseId(@Param("courseId") int courseId)throws Exception;

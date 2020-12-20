@@ -2,7 +2,6 @@ package cn.las.dao;
 
 import cn.las.bean.entity.Arrange;
 import cn.las.bean.entity.Laboratory;
-import com.mysql.cj.x.protobuf.MysqlxDatatypes;
 import org.apache.ibatis.annotations.*;
 
 import org.apache.ibatis.annotations.Insert;
@@ -20,7 +19,7 @@ public interface ArrangeDao {
     List<Arrange> findAll() throws Exception;
 
     @Select("select * from arrange where userId in (select id from user where teacher=#{teacherName})")
-    List<Arrange> findByTeacherName(MysqlxDatatypes.Scalar.String teacherName) throws Exception;
+    List<Arrange> findByTeacherName(String teacherName) throws Exception;
 
     @Select("select * from arrange where laboratoryId=#{laboratoryId} and week=#{week}")
     List<Arrange> findByLaboratoryId(@Param("laboratoryId") int laboratoryId,@Param("week") int week) throws Exception;
@@ -160,10 +159,13 @@ public interface ArrangeDao {
     void removeByLaboratoryId(Integer laboratoryId) throws Exception;
 
     @Insert("insert into arrange " +
-            "(laboratoryId, userId, courseId, week, day, section, number, status, classes) " +
-            "values(#{laboratoryId},#{userId},#{courseId},#{week},#{day},#{section},#{number},#{status},#{classes})")
+            "(laboratoryId, userId, courseId, week, day, section, number, status, classes, tag, period) " +
+            "values(#{laboratoryId},#{userId},#{courseId},#{week},#{day},#{section},#{number},#{status},#{classes},#{tag},#{period})")
     void insertArrange(Arrange arrange) throws Exception;
 
     @Select("select MAX(tag) from arrange")
     Integer findMaxTag() throws Exception;
+
+    @Delete("delete from arrange where tag=#{tag}")
+    void removeByTag(Integer tag) throws Exception;
 }

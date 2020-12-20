@@ -40,4 +40,6 @@ public class Arrange {
     private Integer tag;
 
     private Double period;
+
+    private Integer sectionEnum;
 }

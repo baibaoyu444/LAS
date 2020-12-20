@@ -1,5 +1,7 @@
 package cn.las.bean.enu;
 
+import java.util.Arrays;
+
 public enum SectionEnum {
 
     First(1,new int[]{1}),
@@ -10,7 +12,11 @@ public enum SectionEnum {
     Sixth(6,new int[]{6}),
     Seventh(7,new int[]{1,2}),
     eighth(8,new int[]{3,4}),
-    ninth(9,new int[]{1,2,3,4});
+    ninth(9,new int[]{5,6}),
+    tenth(10,new int[]{1,2,3,4}),
+    eleventh(11,new int[]{3,4,5,6}),
+    twelveth(12, new int[]{1,2,3,4,5,6});
+
 
 
     private int code;

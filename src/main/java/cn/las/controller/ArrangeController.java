@@ -2,7 +2,6 @@ package cn.las.controller;
 
 import cn.las.bean.dto.ArrangeDTO;
 import cn.las.bean.entity.*;
-import cn.las.bean.enu.SectionEnum;
 import cn.las.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -69,6 +68,23 @@ public class ArrangeController {
     @Autowired
     CourseService courseService;
 
+    List<ArrangeDTO>[][] processList(List<ArrangeDTO> dtos) {
+        if(dtos == null) return null;
+        List<ArrangeDTO>[][] lists = new ArrayList[6][7];
+        for (ArrangeDTO dto : dtos) {
+            Set<Integer> weeks = dto.getWeeks();
+            Integer day = dto.getDay();
+            Set<Integer> sections = dto.getSections();
+
+            for (Integer section : sections) {
+                if(lists[section - 1][day - 1] == null) {
+                    lists[section - 1][day - 1] = new ArrayList<ArrangeDTO>();
+                }
+                lists[section - 1][day - 1].add(dto);
+            }
+        }
+        return lists;
+    }
     /**
      * 查询所有的排课信息
      *
@@ -213,7 +229,7 @@ public class ArrangeController {
     }
 
     /**
-     * @param maps
+     * @param arrange
      * {
      *     week:...,
      *     day:...,
@@ -245,7 +261,7 @@ public class ArrangeController {
         }
 
         Message message = new Message(200, "获取教室安排成功");
-        message.putData("arranges", dtos);
+        message.putData("arranges", processList(dtos));
         return message;
     }
 
@@ -260,7 +276,7 @@ public class ArrangeController {
     @ApiOperation(
             httpMethod = "POST",
             notes = "通过老师ID查询某周排课</br>"+
-                    "输入JSON数据: {\"userId\":11}",
+                    "输入JSON数据: {\"userId\":11,\"week\":1}",
             value = "通过老师ID查询某周排课"
     )
     @ApiIgnore
@@ -268,12 +284,14 @@ public class ArrangeController {
         Message message = new Message();
 
         Integer userId = (Integer) maps.get("userId");
+        Integer week = (Integer) maps.get("week");
         if(userId == null) return new Message(403, "参数不全");
 
         Arrange arrange = new Arrange();
         arrange.setUserId(userId);
+        arrange.setWeek(week);
         List<ArrangeDTO> arranges = arrangeService.findByArrange(arrange);
-        message.putData("arranges", arranges);
+        message.putData("arranges", processList(arranges));
         return message;
     }
 
@@ -289,57 +307,25 @@ public class ArrangeController {
     @ResponseBody
     @ApiOperation(
             httpMethod = "POST",
-            notes = "输入json数据：{}",
+            notes = "输入json数据：{\"laboratoryId\":1,\"week\":1}",
             value = "查询实验室排课情况"
     )
     public Message findArrangeByLaboratoryId(@RequestBody Map<String, Object> maps)throws Exception{
         int laboratoryId = (Integer) maps.get("laboratoryId");
+        Integer week = (Integer) maps.get("week");
+
         List<ArrangeDTO> all = null;
         try {
             Arrange arrange = new Arrange();
             arrange.setLaboratoryId(laboratoryId);
+            arrange.setWeek(week);
             all = arrangeService.findByArrange(arrange);
         } catch (Exception e) {
             return new Message(500, "服务器出错");
         }
 
         Message message = new Message(200, "获取排课信息成功");
-        message.putData("arranges",all);
-        return message;
-    }
-
-    /**
-     * 按照用户id和周数week获取个人排课信息
-     *
-     * @param arrange
-     * @return
-     *
-     * 测试通过--高义博
-     */
-    @RequestMapping(value = "/findByUseridAndWeek",method = RequestMethod.GET)
-    @ResponseBody
-    @ApiOperation(
-            httpMethod = "GET",
-            notes = "按照用户id和周数week获取个人排课信息</br>"+
-                    "输入JSON数据: {\"userId\":11, \"week\":1}",
-            value = "按照用户id和周数week获取个人排课信息"
-    )
-    public Message findByUseridAndWeek(@RequestBody Arrange arrange) {
-
-        System.out.println(arrange);
-        List<ArrangeDTO> list = null;
-        try {
-//            list = arrangeService.findByArrange(arrange);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Message(500, "服务器错误");
-        }
-
-        // 进行数据封装
-//        List<ArrangeDTO> process = process(list);
-//        List<ArrangeDTO>[][] courseList = getCourseList(process);
-        Message message = new Message(200, "获取数据成功");
-//        message.putData("arranges", courseList);
+        message.putData("arranges",processList(all));
         return message;
     }
 
@@ -349,25 +335,12 @@ public class ArrangeController {
      * @param maps
      * @return
      */
-    @RequestMapping(value = "/insertManyArrange", method = RequestMethod.POST)
+    @RequestMapping(value = "/insertArranges", method = RequestMethod.POST)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
     @ApiOperation(
             httpMethod = "POST",
-            notes = "增加排课信息功能</br>"+
-                    "输入JSON数据: {</br>" +
-                    "    </br>" +
-                    "    \"arr1\": {</br>" +
-                    "        \"userId\":4,</br>" +
-                    "        \"courseId\":3,</br>" +
-                    "        \"number\":22,</br>" +
-                    "        \"classes\": [\"软件185\", \"软件186\"],</br>" +
-                    "        \"type\":\"实训实验室\",</br>" +
-                    "        \"weeks\":[11,12,13],</br>" +
-                    "        \"day\":3,</br>" +
-                    "        \"section\":7</br>" +
-                    "    }</br>" +
-                    "}",
+            notes = "增加排课信息功能",
             value = "增加排课信息功能"
     )
     public Message insertManyArrange(@RequestBody Map<String, Object> maps) {
@@ -379,7 +352,6 @@ public class ArrangeController {
         Integer userId = (Integer) maps.get("userId");
         String type = (String) maps.get("type");
         Double planTime = (Double) maps.get("plantime");
-
 
         // 获取表中数据
         List<Map<String, Object>> tableData = (List<Map<String, Object>>) maps.get("tableData");
@@ -398,10 +370,11 @@ public class ArrangeController {
              */
             Integer number = (Integer) map.get("studentNumber");
             List<String> classes = (List<String>) map.get("classes");
-            List<Integer> weeks = (List<Integer>) map.get("week");
+            Set<Integer> weeks = (Set<Integer>) map.get("week");
             Integer day = (Integer) map.get("day");
-            List<Integer> sections = (List<Integer>) map.get("section");
+            Set<Integer> sections = (Set<Integer>) map.get("section");
             Double period = (Double) map.get("time");
+            Integer sectionEnum = (Integer) maps.get("sectionEnum");
 
             // 新增课程封装
             ArrangeDTO dto = new ArrangeDTO();
@@ -415,6 +388,7 @@ public class ArrangeController {
             dto.setDay(day);
             dto.setWeeks(weeks);
             dto.setSections(sections);
+            dto.setSectionEnum(sectionEnum);
 
             // 新增课程校验
             try {
@@ -446,23 +420,22 @@ public class ArrangeController {
     @ApiIgnore
     public Message updateArrangeBy(@RequestBody Map<String, Object> maps) {
 
-
-
-
-
         return null;
     }
 
-    @RequestMapping(value = "/deleteByArrangeDTO", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/deleteByTag", method = RequestMethod.DELETE)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    @ApiIgnore
-    public Message deleteByArrangeDTO(@RequestBody Map<String, Object> maps) throws Exception {
-
-
-
-
-
+    @ApiOperation(
+            httpMethod = "DELETE",
+            notes = "通过tag删除课程信息</br>"+
+                    "输入JSON数据: {\"tag\":11}",
+            value = "通过tag删除课程信息"
+    )
+    public Message deleteByTag(@RequestBody Map<String, Object> maps) throws Exception {
+        Integer tag = (Integer) maps.get("tag");
+        if(tag == null) return new Message(403, "参数不全");
+        arrangeService.deleteByTag(tag);
         return new Message(200, "操作成功");
     }
 }

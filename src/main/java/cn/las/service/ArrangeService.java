@@ -4,6 +4,7 @@ import cn.las.bean.dto.ArrangeDTO;
 import cn.las.bean.entity.Arrange;
 import cn.las.bean.entity.Laboratory;
 import org.apache.ibatis.annotations.Param;
+import org.aspectj.lang.annotation.DeclareError;
 
 import java.util.List;
 import java.util.Set;
@@ -14,9 +15,6 @@ public interface ArrangeService {
 
     //根据课程号删除排课
     void deleteArrangeByCourseId(@Param("courseId") int courseId)throws Exception;
-
-    //增加排课
-    void insertone(Arrange arrange)throws Exception;
 
     //通过课程号修改排课
     void updateArrangeById(int id, int week, int day, int section)throws Exception;
@@ -80,4 +78,6 @@ public interface ArrangeService {
     List<ArrangeDTO> findByArrange(Arrange arrange) throws Exception;
 
     void insertArrange(ArrangeDTO dto) throws Exception;
+
+    void deleteByTag(Integer tag) throws Exception;
 }
