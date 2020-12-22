@@ -55,18 +55,6 @@ public class ArrangeController {
     @Autowired
     ArrangeService arrangeService;
 
-    @Autowired
-    LaboratoryService laboratoryService;
-
-    @Autowired
-    IClassService iClassService;
-
-    @Autowired
-    UserService userService;
-
-    @Autowired
-    CourseService courseService;
-
     List<ArrangeDTO>[][] processMap(List<ArrangeDTO> dtos) {
         if(dtos == null) return null;
         List<ArrangeDTO>[][] lists = new ArrayList[6][7];

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.las.mapper.DeclareMapper">
+
+    <insert id="insertDeclare" parameterType="cn.las.bean.entity.Declare">
+        insert into declare (
+            type, reason, userId, status, tag,
+            changeUserid, changeLabid, changeweeks, changedays, changesection
+        )
+        values (
+            #{type}, #{reason}, #{userId}, #{status}, #{tag},
+            #{changeUserid}, #{changeLabid}, #{changeweeks}, #{changedays}, #{changesection}
+        );
+    </insert>
+
+    <delete id="removeById" parameterType="java.lang.Integer">
+        delete from declare where id = #{id}
+    </delete>
+
+    <select id="findAll" resultType="cn.las.bean.entity.Declare">
+        select * from declare;
+    </select>
+
+</mapper>
