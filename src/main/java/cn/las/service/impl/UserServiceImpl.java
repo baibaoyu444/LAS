@@ -8,6 +8,7 @@ import cn.las.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -66,5 +67,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateOne(User user) throws Exception {
         userDao.updateOne(user);
+    }
+
+    @Override
+    public HashMap<Integer, String> getUserInfo() throws Exception {
+        return userDao.getUserInfo();
     }
 }

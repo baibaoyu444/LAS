@@ -10,10 +10,10 @@ import cn.las.dao.LaboratoryDao;
 import cn.las.dao.UserDao;
 import cn.las.mapper.ArrangeMapper;
 import cn.las.service.ArrangeService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,113 +36,35 @@ public class ArrangeServiceImpl implements ArrangeService {
     @Autowired
     LaboratoryDao laboratoryDao;
 
+    @Override
     public List<ArrangeDTO> findAll() throws Exception {
         return arrangeMapper.findAll();
     }
 
+    @Override
     public void deleteArrangeByCourseId(int courseId)throws Exception{
-        arrangeMapper.deleteById(courseId);
-    }
-
-    public void updateArrangeById(int id, int week, int day, int section)throws Exception{
-        arrangeMapper.updateArrangeById(id,week,day,section);
-    }
-
-    public List<Arrange> findArrangeByLaboratoryId(int laboratoryId,int week)throws Exception{
-        return arrangeDao.findByLaboratoryId(laboratoryId,week);
-    }
-
-    public List<Arrange> findArrangeByCourseId(int courseId)throws Exception{
-        return arrangeMapper.findArrangeByCourseId(courseId);
-    }
-
-    //可能不需要（先保留）
-    public List<Arrange> findArrangeByweek(int weeks)throws Exception{
-        return arrangeMapper.findArrangeByweek(weeks);
+        arrangeMapper.deleteByCourseId(courseId);
     }
 
     @Override
-    public List<Laboratory> findEmptyLabByTypeAndWeeksAndDayAndSections(String type, List<Integer> weeks, Integer day, List<Integer> sections) throws Exception {
-        return arrangeDao.findEmptyLabByTypeAndWeeksAndDayAndSections(type, weeks, day, sections);
+    public List<ArrangeDTO> findArrangeByLaboratoryId(int laboratoryId)throws Exception{
+        return arrangeMapper.findArrangeByLaboratoryId(laboratoryId);
     }
 
-    /**
-     * @param laboratoryId 教室id
-     * @param weeks 指定的周数
-     * @param day 指定周几
-     * @return
-     * @throws Exception
-     *
-     * 查找可用的节数按照
-     */
     @Override
-    public List<Integer> findEmptySectionsByLabIdAndWeeksAndDay(Integer laboratoryId, List<Integer> weeks, Integer day) throws Exception {
-        // 查询这几周在这一天可用的节数
-        //        return arrangeDao.findEmptyLabByLabIdAndWeeksAndDay(laboratoryId, weeks, day);
+    public List<ArrangeDTO> findArrangeByUserId(Integer userId, Integer week) throws Exception {
         return null;
     }
 
-    /**
-     * @param weeks  指定周数
-     * @param day  指定某一天
-     * @return
-     * @throws Exception
-     *
-     * 1、查找可用的节数 按照周数和周几
-     * 2、返回集合当中包含节数信息
-     */
     @Override
-    public Set<Integer> findSectionsByWeeksAndDay(List<Integer> weeks, Integer day,String type) throws Exception {
-        Set<Integer> sets = new HashSet<Integer>();
-        Set<Integer> empty = arrangeDao.findSectionsByWeeksAndDay(weeks, day ,type);
-        for (int i = 1; i <= 5; i++) {
-            if(empty.contains(i)) sets.add(i);
-        }
-        return sets;
+    public List<ArrangeDTO> findArrangeByCourseId(int courseId)throws Exception{
+        return arrangeMapper.findArrangeByCourseId(courseId);
     }
 
     @Override
-    public List<Arrange> findArrangeByWeekAndDayAndSection(Integer week, Integer day, Integer section) throws Exception {
-        return arrangeDao.findArrangeByWeekAndDayAndSection(week, day, section);
+    public List<ArrangeDTO> findArrangeByUserId(Integer userId) throws Exception {
+        return arrangeMapper.findArrangeByUserId(userId);
     }
-
-    @Override
-    public List<Integer> isEnableByWeeksAndDayAndSection(List<Integer> weeks, Integer day, Integer section, String type) throws Exception {
-        return arrangeDao.isEnableByWeeksAndDayAndSection(weeks, day, section, type);
-    }
-
-    @Override
-    public void insertArrange(Arrange arrange) throws Exception {
-        arrangeDao.addArrange(arrange);
-    }
-
-    @Override
-    public void addArrange(Arrange arrange) throws Exception {
-        arrangeDao.addArrange(arrange);
-    }
-
-    @Override
-    public List<Arrange> findArrangeByUserId(Integer userId,Integer week) throws Exception {
-        return arrangeDao.findArrangeByUserId(userId,week);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * @author 白宝玉
@@ -155,106 +77,130 @@ public class ArrangeServiceImpl implements ArrangeService {
      */
     @Override
     public List<ArrangeDTO> findByArrange(Arrange arrange) throws Exception {
-        // 使用bean utils进行属性的复制
         List<ArrangeDTO> arranges = arrangeMapper.findByArrange(arrange);
         return arranges;
     }
 
     @Override
     public void insertArrange(ArrangeDTO dto) throws Exception {
+
         // 提取dto数据
         Set<Integer> weeks = dto.getWeeks();
+        Set<Integer> days = dto.getDays();
         Integer sectionEnum = dto.getSectionEnum();
         int[] sections = SectionEnum.parse(sectionEnum);
-        Integer day = dto.getDay();
+        Set<Integer> classIds = dto.getClassIds();
+
         String type = dto.getType();
         Integer userId = dto.getUserId();
         Integer courseId = dto.getCourseId();
-        String classes = dto.getClassList().toString().replaceAll(", ", ",");
-        classes = classes.substring(1, classes.length() - 1);
         Double period = dto.getPeriod();
         Integer number = dto.getNumber();
-        Integer tag = arrangeDao.findMaxTag() + 1;
 
+        // 检查tag是否存在 如果存在-修改数据 如果不存在-申请排课
+        Integer tag = null;
+        if(dto.getTag() == null) {
+            tag = arrangeDao.findMaxTag() + 1;
+        } else {
+            tag = dto.getTag();
+        }
+
+        // 遍历集合数据
+        Arrange entity = new Arrange();
         for (int week : weeks) {
             for (int section : sections) {
-                // arrange对象的封装a
-                Arrange entity = new Arrange();
+                for (int day : days) {
+                    // arrange对象的封装a
 
-                // 封装其他属性（周数，星期，节次，实验室id）用于检验冲突
-                entity.setWeek(week);
-                entity.setSection(section);
-                entity.setDay(day);
+                    // 封装其他属性（周数，星期，节次，实验室id）用于检验冲突
+                    entity.setWeek(week);
+                    entity.setSection(section);
+                    entity.setDay(day);
 
-                /**
-                 * 提示信息
-                 * 1、此类教室该时间段无空闲
-                 * 2、教师课程已存在
-                 */
-
-                /**
-                 * 课程冲突检查流程
-                 * 周次 + 星期 + 时间 + 教室 是否冲突
-                 * 如果冲突
-                 *      教师的userId是否相同
-                 *          不相同 - 教室该时间段被占用
-                 *          相同 - 教师课程已存在
-                 * 没有冲突
-                 *      进行教室的安排
-                 *
-                 * 一个教师 同一时间段不能安排多场课--等待考虑
-                 */
-                // 插入之前检查课程是不是存在，如果不存在，直接插入
-                List<Laboratory> byType = null;
-                if(type == null) {
-                    byType = laboratoryDao.findAll();
-                } else {
-                    byType = laboratoryDao.findByType(type);
-                }
-
-                // 匹配实验室
-                for (Laboratory lab : byType) {
-                    // 如果实验室是不可用的
-                    if(lab.getStatus() == 0) continue;
-
-                    // 如果实验室是可用的
-                    entity.setLaboratoryId(lab.getId());
-                    List<ArrangeDTO> byArrange = arrangeMapper.findByArrange(entity);
-                    if(byArrange == null || byArrange.size() == 0) {
-                        // 如果查询到有空闲课程，直接插入
-
-
-                        entity.setCourseId(courseId);
-                        entity.setUserId(userId);
-                        entity.setNumber(number);
-                        entity.setStatus(1);
-                        entity.setClasses(classes);
-                        entity.setTag(tag);
-                        entity.setPeriod(period);
-                        entity.setSectionEnum(sectionEnum);
-
-                        System.out.println(dto);
-                        System.out.println(entity);
-                        arrangeDao.insertArrange(entity);
-                        break;
+                    /**
+                     * 课程冲突检查流程
+                     * 周次 + 星期 + 时间 + 教室 是否冲突
+                     * - 如果冲突
+                     *      - 教师的userId是否相同
+                     *          - 不相同 - 教室该时间段被占用
+                     *          - 相同 - 教师课程已存在
+                     * - 没有冲突
+                     *      - 进行教室的安排
+                     *
+                     * 一个教师 同一时间段不能安排多场课--等待考虑
+                     */
+                    // 插入之前检查课程是不是存在，如果不存在，直接插入
+                    List<Laboratory> labs = null;
+                    if(type == null) {
+                        labs = laboratoryDao.findAll();
+                    } else {
+                        labs = laboratoryDao.findByType(type);
                     }
 
-                    // 查询冲突课程是不是教师课程
-                    boolean belongUser = false;
-                    for (ArrangeDTO arrange : byArrange) {
-                        if(arrange.getUserId().equals(userId)) {
-                            belongUser = true;
+                    // 匹配实验室
+                    boolean isInsert = false;
+                    for (Laboratory lab : labs) {
+//                        System.out.println("room status = " + lab);
+                        // 如果实验室是禁用的  直接跳过
+                        if(lab.getStatus() == 0) {
+                            continue;
+                        }
+
+                        // 如果实验室是可用的
+                        entity.setLaboratoryId(lab.getId());
+                        List<ArrangeDTO> byArrange = arrangeMapper.findByArrange(entity);
+
+                        // 按照条件查询的课程信息是空的 说明课程有剩余  可以直接插入数据
+                        if(byArrange == null || byArrange.size() == 0) {
+
+                            // 遍历班级信息
+                            for (Integer classId : classIds) {
+                                entity.setCourseId(courseId);
+                                entity.setUserId(userId);
+                                entity.setNumber(number);
+                                entity.setStatus(1);
+                                entity.setClassId(classId);
+                                entity.setTag(tag);
+                                entity.setPeriod(period);
+                                entity.setSectionEnum(sectionEnum);
+
+                                System.out.println(dto);
+                                System.out.println(entity);
+                                arrangeDao.insertArrange(entity);
+                                isInsert = true;
+                            }
                             break;
                         }
-                    }
 
-                    if(!belongUser) {
-                        StringBuffer buffer = new StringBuffer("存在错误: ");
+                        // 如果此时间段没有时间--查询冲突课程是不是教师课程
+                        for (ArrangeDTO arrange : byArrange) {
+                            if(arrange.getUserId().equals(userId)) {
+                                StringBuffer buffer = new StringBuffer("HAVING-信息已存在 : ");
+                                buffer.append("课程: ").append(arrange.getCourseName()).append(" ");
+                                buffer.append("周数: ").append(arrange.getWeeks()).append(" ");
+                                buffer.append("星期: ").append(arrange.getDays()).append(" ");
+                                buffer.append("节次: ").append(arrange.getSections()).append(" 该教师此信息已存在");
+                                throw new IllegalArgumentException(buffer.toString());
+                            }
+                        }
+
+
+                        /**
+                         * 提示信息
+                         * 1、此类教室该时间段无空闲
+                         * 2、教师课程已存在
+                         */
+                        StringBuffer buffer = new StringBuffer("EXIST-存在错误: ");
                         buffer.append("课程: ").append(courseId).append(" ");
                         buffer.append("周数: ").append(week).append(" ");
                         buffer.append("星期: ").append(day).append(" ");
                         buffer.append("节次: ").append(section).append(" 此类型教师此时间段无空闲, 请另选时段或更换教室类型");
                         throw new IllegalArgumentException(buffer.toString());
+                    }
+
+                    // 如果没插入课程 -- 只存在教室不可用一种情况
+                    if(!isInsert) {
+                        throw new IllegalArgumentException("FAULT-该类教室不可用");
                     }
                 }
             }
@@ -264,5 +210,125 @@ public class ArrangeServiceImpl implements ArrangeService {
     @Override
     public void deleteByTag(Integer tag) throws Exception {
         arrangeDao.removeByTag(tag);
+    }
+
+    @Override
+    public void updateByArrange(Arrange param) throws Exception {
+        // 检验新修改的是否冲突
+
+        Arrange last = new Arrange();
+        BeanUtils.copyProperties(param, last);
+
+
+        /**
+         * 1、如果修改的是教师，考虑到教师时间冲突
+         * 2、如果修改的是实验室，考虑实验室是否冲突
+         *
+         *
+         */
+
+
+
+
+
+
+
+
+        // 检查实验室是否发生冲突
+        if(param.getLaboratoryId() != null) {
+
+        }
+
+        // 检查用户的id是否发生冲突
+        if(param.getUserId() != null) {
+
+        }
+//        // 卸下标记
+//        param.setTag(null);
+
+//        // 先查询这个教室在这个时间段是不是存在课程 如果存在--直接报错
+//        List<Arrange> arranges = arrangeMapper.selectOriginArrange(param);
+//        for (Arrange arrange : arranges) {
+//            if(param.getLaboratoryId() == null)
+//                param.setLaboratoryId(arrange.getLaboratoryId());
+//            if(param.getWeek() == null)
+//                param.setWeek(arrange.getWeek());
+//            if(param.getDay() == null)
+//                param.setDay(arrange.getDay());
+//            if(param.getSection() == null)
+//                param.setSection(arrange.getSection());
+//            List<Arrange> byArrange = arrangeMapper.selectOriginArrange(param);
+//            if(byArrange != null || byArrange.size() != 0) {
+//                throw new IllegalArgumentException("该时间段该实验室无空闲时间");
+//            }
+//        }
+
+//        arrangeMapper.updateByArrange(last);
+
+
+
+
+        arrangeMapper.updateByArrange(param);
+    }
+
+    @Override
+    public void updateByWeeksDaysAndSections(Set<Integer> weeks, Set<Integer> days, Integer sectionEnum, Integer tag) throws Exception {
+        Arrange param = new Arrange();
+
+        List<ArrangeDTO> dtos = arrangeMapper.findArrangeByTag(tag);
+        if(dtos == null || dtos.size() == 0) {
+            throw new Exception("数据不存在");
+        }
+        ArrangeDTO dto = dtos.get(0);
+
+        // 获取之前的基本数据
+        Integer laboratoryId = dto.getLaboratoryId();
+        Integer courseId = dto.getCourseId();
+        Integer userId = dto.getUserId();
+        Integer number = dto.getNumber();
+        Set<Integer> classIds = dto.getClassIds();
+        Double period = dto.getPeriod();
+
+        Arrange last = new Arrange();
+        last.setLaboratoryId(laboratoryId);
+        last.setCourseId(courseId);
+        last.setUserId(userId);
+        last.setNumber(number);
+        last.setPeriod(period);
+        last.setTag(tag);
+        last.setSectionEnum(sectionEnum);
+
+        // 需要事先删除 之后一个个插入
+        arrangeDao.removeByTag(tag);
+
+        for (Integer week : weeks) {
+            for (Integer day : days) {
+                for (Integer section : SectionEnum.parse(sectionEnum)) {
+                    for (Integer classId : classIds) {
+                        param.setWeek(week);
+                        param.setDay(day);
+                        param.setSection(section);
+                        param.setClassId(classId);
+
+                        List<Arrange> arranges = arrangeMapper.selectOriginArrange(param);
+                        if(arranges != null || arranges.size() != 0) {
+                            throw new IllegalArgumentException("该时间段该实验室无空闲时间");
+                        }
+
+                        // 如果没查询到，说明没冲突，直接插入数据
+                        last.setWeek(week);
+                        last.setDay(day);
+                        last.setSection(section);
+                        last.setClassId(classId);
+                        arrangeDao.insertArrange(last);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void updateByArrangeDTO(ArrangeDTO dto) throws Exception {
+
     }
 }

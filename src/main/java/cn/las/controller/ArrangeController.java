@@ -8,12 +8,11 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import springfox.documentation.annotations.ApiIgnore;
-
 import java.util.*;
 
 /**
@@ -68,19 +67,21 @@ public class ArrangeController {
     @Autowired
     CourseService courseService;
 
-    List<ArrangeDTO>[][] processList(List<ArrangeDTO> dtos) {
+    List<ArrangeDTO>[][] processMap(List<ArrangeDTO> dtos) {
         if(dtos == null) return null;
         List<ArrangeDTO>[][] lists = new ArrayList[6][7];
         for (ArrangeDTO dto : dtos) {
             Set<Integer> weeks = dto.getWeeks();
-            Integer day = dto.getDay();
+            Set<Integer> days = dto.getDays();
             Set<Integer> sections = dto.getSections();
 
             for (Integer section : sections) {
-                if(lists[section - 1][day - 1] == null) {
-                    lists[section - 1][day - 1] = new ArrayList<ArrangeDTO>();
+                for (Integer day :  days) {
+                    if(lists[section - 1][day - 1] == null) {
+                        lists[section - 1][day - 1] = new ArrayList<ArrangeDTO>();
+                    }
+                    lists[section - 1][day - 1].add(dto);
                 }
-                lists[section - 1][day - 1].add(dto);
             }
         }
         return lists;
@@ -116,120 +117,7 @@ public class ArrangeController {
     }
 
     /**
-     * @param map1
-     * {
-     *     id:...,
-     *     week:...,
-     *     day:...,
-     *     section:...
-     * }
-     **/
-    @RequestMapping(value = "updateArrangeByCourseId", method = RequestMethod.GET)
-    @ResponseBody
-    @ApiOperation(
-            httpMethod = "GET",
-            notes = "",
-            value = "临时调课"
-    )
-    @ApiIgnore
-    public Message updateArrangeById(@RequestBody Map<String, Object> map1)throws Exception {
-
-        Integer id = (Integer) map1.get("id");
-        Integer week = (Integer) map1.get("week");
-        Integer day = (Integer) map1.get("day");
-        Integer section = (Integer) map1.get("day");
-
-        if(id == null || week == null || day == null || section == null){
-            return new Message(403, "参数不能为空");
-        }
-
-        try {
-            arrangeService.updateArrangeById(id,week,day,section);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Message(207, "修改排课失败");
-        }
-
-        return new Message(200, "修改排课成功");
-    }
-
-    /**
      * @param maps
-     * {
-     *     type:...,
-     *     weeks:...,
-     *     day:...,
-     *     sections:...
-     * }
-     * @return
-     *
-     * 1、按照指定的周数（weeks）、周几（day）、课程的节数（sections）和教室类型（type）进行选课
-     *      要求前端给的数据是本课的排课周数，周几和第几节以及实验室的类型
-     * 2、不指定教室的号，按照指定的信息获取合适的教室让教师自己选
-     * 3、选好课之后再次提交，添加排课信息
-     *
-     * 周数可（weeks）多选，周几（days）可多选，课程的节数（section）可多选但是最多两节，教室的类型（type）单选
-     *
-     * 测试通过--白宝玉
-     */
-    @RequestMapping(value = "selectEnableLabByTWDS", method = RequestMethod.GET)
-    @ResponseBody
-    @Transactional(rollbackFor = Exception.class)
-    @ApiOperation(
-            httpMethod = "GET",
-            notes = "查询可用教室By类型|周数|周几|时间段</br>"+
-                    "输入JSON数据: {</br>" +
-                    "    \"weeks\":[1,2,3,4],</br>" +
-                    "    \"day\":1,</br>" +
-                    "    \"section\":3,</br>" +
-                    "    \"type\":\"实训实验室\"</br>" +
-                    "}",
-            value = "查询可用教室By类型|周数|周几|时间段"
-    )
-    @ApiIgnore
-    public Message findArrangeByTypeAndWeeksAndDayAndSection(@RequestBody Map<String, Object> maps) {
-        //获取参数信息
-        List<Integer> weeks = (List<Integer>) maps.get("weeks");
-        Integer day = (Integer) maps.get("day");
-        Integer section = (Integer) maps.get("section");
-        String type = (String) maps.get("type");
-
-        //非空验证
-        if(weeks == null || section == null || type == null || day == null) {
-            return new Message(403, "参数不能为空");
-        }
-
-        // 进行教室的查询
-
-        List<Integer> laboratoriesid = null;
-        try {
-            /*
-             * 首先查询某教室是否可用
-             * 如果不可用使用返回错误信息和错误代码
-             */
-
-            laboratoriesid = arrangeService.isEnableByWeeksAndDayAndSection(weeks, day, section,type);
-
-            System.out.println("arranges size = " + laboratoriesid.size());
-
-            if(laboratoriesid.size() == 0) {
-                Message message = new Message(502, "所选时间段冲突");
-                message.putData("laboratoriesid", laboratoriesid);
-                return message;
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Message(500, "查询空闲实验室失败-系统错误");
-        }
-
-        Message message = new Message(200, "获取空实验室信息成功");
-        message.putData("laboratoryid", laboratoriesid);
-        return message;
-    }
-
-    /**
-     * @param arrange
      * {
      *     week:...,
      *     day:...,
@@ -241,7 +129,7 @@ public class ArrangeController {
      *
      * 测试通过--高义博
      */
-    @RequestMapping(value = "findArrangeByWDS", method = RequestMethod.GET)
+    @RequestMapping(value = "/findArrangeByWDS", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(
             httpMethod = "GET",
@@ -249,7 +137,18 @@ public class ArrangeController {
                     "输入JSON数据: {\"week\":1,\"day\":1,\"section\":1}",
             value = "查询课程By周数|周几|时间段"
     )
-    public Message findArrangeByWeekDayAndSection(@RequestBody Arrange arrange) {
+    public Message findArrangeByWDS(@RequestBody Map<String, Object> maps) {
+
+        // 非空验证
+        Integer week = (Integer) maps.get("week");
+        Integer day = (Integer) maps.get("day");
+        Integer section = (Integer) maps.get("section");
+
+        Arrange arrange = new Arrange();
+        arrange.setDay(day);
+        arrange.setWeek(week);
+        arrange.setSection(section);
+        System.out.println("Arrange = " + arrange);
 
         // 获取教室安排信息
         List<ArrangeDTO> dtos = null;
@@ -261,7 +160,7 @@ public class ArrangeController {
         }
 
         Message message = new Message(200, "获取教室安排成功");
-        message.putData("arranges", processList(dtos));
+        message.putData("arranges", processMap(dtos));
         return message;
     }
 
@@ -271,17 +170,15 @@ public class ArrangeController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "findArrangeByUserId", method = RequestMethod.POST)
+    @RequestMapping(value = "/findArrangeByUserId", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(
-            httpMethod = "POST",
+            httpMethod = "GET",
             notes = "通过老师ID查询某周排课</br>"+
                     "输入JSON数据: {\"userId\":11,\"week\":1}",
             value = "通过老师ID查询某周排课"
     )
-    @ApiIgnore
     public Message findArrangeByUserId(@RequestBody Map<String, Object> maps) throws Exception {
-        Message message = new Message();
 
         Integer userId = (Integer) maps.get("userId");
         Integer week = (Integer) maps.get("week");
@@ -291,7 +188,8 @@ public class ArrangeController {
         arrange.setUserId(userId);
         arrange.setWeek(week);
         List<ArrangeDTO> arranges = arrangeService.findByArrange(arrange);
-        message.putData("arranges", processList(arranges));
+        Message message = new Message(200, "请求数据成功");
+        message.putData("arranges", processMap(arranges));
         return message;
     }
 
@@ -303,15 +201,15 @@ public class ArrangeController {
      *
      * 测试通过--高义博
      */
-    @RequestMapping(value = "/findArrangeByLaboratoryId", method = RequestMethod.POST)
+    @RequestMapping(value = "/findArrangeByLaboratoryId", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(
-            httpMethod = "POST",
+            httpMethod = "GET",
             notes = "输入json数据：{\"laboratoryId\":1,\"week\":1}",
             value = "查询实验室排课情况"
     )
     public Message findArrangeByLaboratoryId(@RequestBody Map<String, Object> maps)throws Exception{
-        int laboratoryId = (Integer) maps.get("laboratoryId");
+        Integer laboratoryId = (Integer) maps.get("laboratoryId");
         Integer week = (Integer) maps.get("week");
 
         List<ArrangeDTO> all = null;
@@ -321,11 +219,12 @@ public class ArrangeController {
             arrange.setWeek(week);
             all = arrangeService.findByArrange(arrange);
         } catch (Exception e) {
+            e.printStackTrace();
             return new Message(500, "服务器出错");
         }
 
         Message message = new Message(200, "获取排课信息成功");
-        message.putData("arranges",processList(all));
+        message.putData("arranges",processMap(all));
         return message;
     }
 
@@ -369,12 +268,14 @@ public class ArrangeController {
                 多个周次|周几|第几节课|安排课时
              */
             Integer number = (Integer) map.get("studentNumber");
-            List<String> classes = (List<String>) map.get("classes");
-            Set<Integer> weeks = (Set<Integer>) map.get("week");
-            Integer day = (Integer) map.get("day");
-            Set<Integer> sections = (Set<Integer>) map.get("section");
+            List<Integer> cids = (List<Integer>) map.get("classIds");
+            Set<Integer> classIds = new HashSet<Integer>(cids);
+            List<Integer> wks = (List<Integer>) map.get("weeks");
+            Set<Integer> weeks = new HashSet<Integer>(wks);
+            List<Integer> dys = (List<Integer>) map.get("days");
+            Set<Integer> days = new HashSet<Integer>(dys);
             Double period = (Double) map.get("time");
-            Integer sectionEnum = (Integer) maps.get("sectionEnum");
+            Integer sectionEnum = (Integer) map.get("sectionEnum");
 
             // 新增课程封装
             ArrangeDTO dto = new ArrangeDTO();
@@ -383,11 +284,11 @@ public class ArrangeController {
             dto.setType(type);
 
             dto.setNumber(number);
-            dto.setClassList(classes);
+
             dto.setPeriod(period);
-            dto.setDay(day);
+            dto.setDays(days);
             dto.setWeeks(weeks);
-            dto.setSections(sections);
+            dto.setClassIds(classIds);
             dto.setSectionEnum(sectionEnum);
 
             // 新增课程校验
@@ -414,15 +315,101 @@ public class ArrangeController {
     }
 
 
-    @RequestMapping(value = "/updateArrangeBy", method = RequestMethod.PUT)
+    /**
+     * 修改某一排课的教师
+     *
+     * @param maps
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/updateArrangeTeacher", method = RequestMethod.PUT)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    @ApiIgnore
-    public Message updateArrangeBy(@RequestBody Map<String, Object> maps) {
+    public Message updateArrangeUserIdByTag(@RequestBody Map<String, Object> maps) throws Exception {
+        // 获取前端传输数据
+        Integer tag = (Integer) maps.get("tag");
+        Integer userId = (Integer) maps.get("userId");
 
-        return null;
+        // 对数据进行封装
+        Arrange arrange = new Arrange();
+        arrange.setUserId(userId);
+        arrange.setTag(tag);
+        try {
+            arrangeService.updateByArrange(arrange);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return new Message(403, e.getMessage());
+        }
+
+        Message message = new Message(200, "修改教室数据成功");
+        return message;
     }
 
+    /**
+     * 修改教室的位置
+     *
+     * @param maps
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/updateArrangeLab", method = RequestMethod.PUT)
+    @ResponseBody
+    @Transactional(rollbackFor = Exception.class)
+    public Message updateArrangeLaboratoryByTag(@RequestBody Map<String, Object> maps) throws Exception {
+        // 获取前端传输数据
+        Integer tag = (Integer) maps.get("tag");
+        Integer laboratoryId = (Integer) maps.get("laboratoryId");
+
+        // 对数据进行封装
+        Arrange arrange = new Arrange();
+        arrange.setLaboratoryId(laboratoryId);
+        arrange.setTag(tag);
+
+        // 检查教室是否冲突，并且抓住报错
+        arrangeService.updateByArrange(arrange);
+
+        return  new Message(200, "操作成功");
+    }
+
+    /**
+     * 修改教室的位置
+     *
+     * @param maps
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/updateArrangeWDS", method = RequestMethod.PUT)
+    @ResponseBody
+    @Transactional(rollbackFor = Exception.class)
+    public Message updateArrangeByTag(@RequestBody Map<String, Object> maps) {
+        // 获取前端传输数据
+        Integer tag = (Integer) maps.get("tag");
+        Set<Integer> weeks = (Set<Integer>) maps.get("weeks");
+        Set<Integer> days = (Set<Integer>) maps.get("days");
+        Integer sectionEnum = (Integer) maps.get("sectionEnum");
+        // 对数据进行封装
+
+
+        // catch 冲突的时候的报错
+        try {
+            arrangeService.updateByWeeksDaysAndSections(weeks, days, sectionEnum, tag);
+        } catch (IllegalArgumentException e) {
+            // 当出现错误的时候，直接回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return new Message(501, e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new Message(200, "操作成功");
+    }
+
+
+    /**
+     * 通过tag进行课程的删除
+     * @param maps
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/deleteByTag", method = RequestMethod.DELETE)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
@@ -439,3 +426,46 @@ public class ArrangeController {
         return new Message(200, "操作成功");
     }
 }
+
+
+
+
+
+
+
+/**
+ Set<Integer> weeks = (Set<Integer>) maps.get("weeks");
+ Integer day = (Integer) maps.get("day");
+ Integer sectionEnum = (Integer) maps.get("section");
+ Integer laboratoryId = (Integer) maps.get("laboratoryId");
+ Integer userId = (Integer) maps.get("userId");
+ Integer courseId = (Integer) maps.get("courseId");
+ String type = (String) maps.get("type");
+
+ // 先查询，提取原有的课程信息，之后再删除原来的课程
+ try {
+ Arrange arrange = new Arrange();
+ arrange.setTag(tag);
+ List<ArrangeDTO> byArrange = arrangeService.findByArrange(arrange);
+ // 检查byArrange是不是空的
+
+ // 获取原始的dto数据
+ ArrangeDTO dto = byArrange.get(0);
+ //            String classes = dto.getClassList().toString().replaceAll(", ", ",");
+ //            classes = classes.substring(1, classes.length() - 1);
+ Double period = dto.getPeriod();
+ Integer number = dto.getNumber();
+
+
+ // 删除之前的所有tag排课数据
+ arrangeService.deleteByTag(tag);
+
+ // 之后进行排课修改
+
+ } catch (Exception e) {
+ e.printStackTrace();
+ }
+
+ // 插入新的排课数据
+ ArrangeDTO dto = new ArrangeDTO();
+ dto.setSectionEnum(sectionEnum);*/

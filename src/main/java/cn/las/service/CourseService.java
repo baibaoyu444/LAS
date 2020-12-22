@@ -2,6 +2,7 @@ package cn.las.service;
 
 import cn.las.bean.entity.Course;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface CourseService {
@@ -20,4 +21,6 @@ public interface CourseService {
     void updateCourse(Course course) throws Exception;
 
     List<Course> selectAll() throws Exception;
+
+    HashMap<Integer, String> getCourseInfo() throws Exception;
 }

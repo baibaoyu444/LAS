@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,29 @@ public class LaboratoryController {
 
     @Autowired
     LaboratoryService laboratoryService;
+
+
+    /**
+     * 查询实验室基本信息
+     *
+     * 测试通过--白宝玉
+     */
+    @RequestMapping(value = "getLabInfo", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(
+            httpMethod = "GET",
+            notes = "获取实验室数据",
+            value = "获取实验室数据"
+    )
+    public Message getLabInfo() throws Exception {
+        // 添加实验室信息
+        HashMap<Integer, String> labInfo = laboratoryService.getLabInfo();
+
+        // 返回成功信息
+        Message message = new Message(200, "获取实验室信息成功");
+        message.putData("labInfo", labInfo);
+        return message;
+    }
 
     /**
      * 增加实验室信息

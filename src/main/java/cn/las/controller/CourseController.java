@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,27 @@ public class CourseController {
      * @return 返回带有所有course的 message
      * @throws Exception
      */
-    @RequestMapping("findAll")
+    @RequestMapping(value = "getCourseInfo", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(
+            httpMethod = "GET",
+            notes = "查询课程接口",
+            value = "查询课程接口"
+    )
+    public Message getCourseInfo() throws Exception {
+        HashMap<Integer, String> courseInfo = courseService.getCourseInfo();
+        Message message = new Message(200, "获取课程成功");
+        message.putData("courseInfo", courseInfo);
+        return message;
+    }
+
+    /**
+     * 查询所有的课程信息
+     *
+     * @return 返回带有所有course的 message
+     * @throws Exception
+     */
+    @RequestMapping(value = "findAll", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(
             httpMethod = "GET",

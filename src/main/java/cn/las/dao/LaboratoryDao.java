@@ -3,6 +3,7 @@ package cn.las.dao;
 import cn.las.bean.entity.Laboratory;
 import org.apache.ibatis.annotations.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface LaboratoryDao {
@@ -30,4 +31,10 @@ public interface LaboratoryDao {
             "location=#{location}, status=#{status}, limitpro=#{limitpro} " +
             "where id=#{id}")
     void updateLab(Laboratory laboratory) throws Exception;
+
+    @Select("select name from laboratory where id=#{id}")
+    String selectNameById(Integer id) throws Exception;
+
+    @Select("select id, name from laboratory")
+    HashMap<Integer, String> getLabInfo() throws Exception;
 }

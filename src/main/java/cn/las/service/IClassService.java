@@ -2,6 +2,7 @@ package cn.las.service;
 
 import cn.las.bean.entity.IClass;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface IClassService {
@@ -16,4 +17,6 @@ public interface IClassService {
     void updateClass(IClass iClass) throws Exception;
 
     void deleteByClassId(Integer id) throws Exception;
+
+    HashMap<Integer, String> getClassInfo() throws Exception;
 }

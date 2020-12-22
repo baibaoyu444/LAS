@@ -4,38 +4,198 @@
 <mapper namespace="cn.las.mapper.ArrangeMapper">
 
     <!-- 通过教学周查当前周排课情况（可能不需要，先保留）-->
-    <select id="findArrangeByweek" parameterType="java.lang.Integer" resultType="cn.las.bean.entity.Arrange">
-        select * from arrange where week=#{week}
+    <select id="findArrangeByweek" resultMap="arrangeDtoMap">
+        select laboratoryId,userId,courseId,week,day,section,number,status,classId,tag,period,sectionEnum
+        from arrange
+        where week=#{week}
+        group by tag;
     </select>
 
     <!-- 根据实验室id找到当前实验室排课情况 -->
-    <select id="findArrangeByLaboratoryId" parameterType="java.lang.Integer" resultType="cn.las.bean.entity.Arrange">
-        select * from arrange where laboratoryId=#{laboratoryId}
+    <select id="findArrangeByLaboratoryId" resultMap="arrangeDtoMap">
+        select laboratoryId,userId,courseId,week,day,section,number,status,classId,tag,period,sectionEnum
+        from arrange
+        where laboratoryId=#{laboratoryId}
+        group by tag;
     </select>
 
     <!-- 根据课程id找到当前课程排课情况-->
-    <select id="findArrangeByCourseId" parameterType="java.lang.Integer" resultType="cn.las.bean.entity.Arrange">
-        select * from arrange where courseId=#{courseId}
+    <select id="findArrangeByCourseId" resultMap="arrangeDtoMap">
+        select laboratoryId,userId,courseId,week,day,section,number,status,classId,tag,period,sectionEnum
+        from arrange
+        where courseId=#{courseId}
+        group by tag;
     </select>
 
-    <select id="findByUserId" parameterType="java.lang.Integer" resultMap="arrangeDtoMap">
-        select * from arrange where userId = #{userId} group by tag
+    <select id="findArrangeByUserId" resultMap="arrangeDtoMap">
+        select laboratoryId,userId,courseId,week,day,section,number,status,classId,tag,period,sectionEnum
+        from arrange
+        where userId=#{userId}
+        group by tag;
     </select>
 
-    <delete id="deleteById" parameterType="java.lang.Integer">
+    <delete id="deleteByCourseId" parameterType="java.lang.Integer">
         delete from arrange where courseId = #{courseId}
     </delete>
 
-    <update id="updateArrangeById">
-
-    </update>
+    <select id="findArrangeByTag" resultMap="arrangeDtoMap">
+        select select laboratoryId,userId,courseId,week,day,section,number,status,classId,tag,period,sectionEnum
+        from arrange
+        where tag = #{tag}
+        group by tag
+    </select>
 
     <select id="findAll" resultMap="arrangeDtoMap">
-        select * from arrange group by tag
+        select laboratoryId,userId,courseId,week,day,section,number,status,classId,tag,period,sectionEnum
+        from arrange
+        group by tag
     </select>
 
     <!--  通过week和userid查询课表  -->
     <select id="findByArrange" resultMap="arrangeDtoMap">
+        select laboratoryId,userId,courseId,week,day,section,number,status,classId,tag,period,sectionEnum
+        from arrange where 1=1
+        <if test="laboratoryId != null">
+            and laboratoryId = #{laboratoryId}
+        </if>
+
+        <if test="courseId != null">
+            and courseId = #{courseId}
+        </if>
+
+        <if test="userId != null">
+            and userId = #{userId}
+        </if>
+
+        <if test="week != null">
+            and week = #{week}
+        </if>
+
+        <if test="day != null">
+            and day = #{day}
+        </if>
+
+        <if test="section != null">
+            and section = #{section}
+        </if>
+
+        <if test="number != null">
+            and number = #{number}
+        </if>
+
+        <if test="classId != null">
+            and classId = #{classId}
+        </if>
+
+        <if test="period != null">
+            and period = #{period}
+        </if>
+
+        <if test="tag != null">
+            and tag = #{tag}
+        </if>
+        group by tag
+    </select>
+
+    <resultMap id="arrangeDtoMap" type="cn.las.bean.dto.ArrangeDTO">
+        <result column="laboratoryId" property="laboratoryId"></result>
+        <result column="userId" property="userId"></result>
+        <result column="courseId" property="courseId"></result>
+        <result column="number" property="number"></result>
+        <result column="status" property="status"></result>
+        <result column="tag" property="tag"></result>
+        <result column="period" property="period"></result>
+        <collection property="weeks" column="tag"
+                    select="cn.las.mapper.ArrangeMapper.findWeeksByTag">
+        </collection>
+        <collection property="days" column="tag"
+                    select="cn.las.mapper.ArrangeMapper.findDaysByTag">
+        </collection>
+        <collection property="sections" column="tag"
+                    select="cn.las.mapper.ArrangeMapper.findSectionsByTag">
+        </collection>
+        <collection property="classIds" column="tag"
+                    select="cn.las.mapper.ArrangeMapper.findClassIdsByTag">
+        </collection>
+        <collection property="labName" column="laboratoryId"
+                    select="cn.las.dao.LaboratoryDao.selectNameById">
+        </collection>
+        <collection property="courseName" column="courseId"
+                    select="cn.las.dao.CourseDao.selectNameById">
+        </collection>
+        <collection property="userName" column="userId"
+                    select="cn.las.dao.UserDao.selectNameById">
+        </collection>
+    </resultMap>
+
+    <!--  通过tag查询周数  -->
+    <select id="findWeeksByTag" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select week from arrange where tag = #{tag}
+    </select>
+
+    <!--  通过tag查询课程  -->
+    <select id="findSectionsByTag" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select `section`
+        from arrange
+        where tag = #{tag}
+    </select>
+
+    <!--  通过tag查询day  -->
+    <select id="findDaysByTag" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select `day` from arrange where tag = #{tag}
+    </select>
+
+    <!--  通过tag查询classId  -->
+    <select id="findClassIdsByTag" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select `classId` from arrange where tag = #{tag}
+    </select>
+
+
+    <update id="updateByArrange" parameterType="cn.las.bean.entity.Arrange">
+        update arrange set id=id
+        <if test="laboratoryId != null">
+            ,laboratoryId = #{laboratoryId}
+        </if>
+
+        <if test="courseId != null">
+            ,courseId = #{courseId}
+        </if>
+
+        <if test="userId != null">
+            ,userId = #{userId}
+        </if>
+
+        <if test="week != null">
+            ,week = #{week}
+        </if>
+
+        <if test="day != null">
+            ,day = #{day}
+        </if>
+
+        <if test="section != null">
+            ,section = #{section}
+        </if>
+
+        <if test="number != null">
+            ,number = #{number}
+        </if>
+
+        <if test="classId != null">
+            ,classId = #{classId}
+        </if>
+
+        <if test="period != null">
+            ,period = #{period}
+        </if>
+
+        where tag = #{tag}
+    </update>
+
+
+
+    <!--  查询原始的arrange列表  -->
+    <select id="selectOriginArrange" parameterType="cn.las.bean.entity.Arrange" resultType="cn.las.bean.entity.Arrange">
         select * from arrange where 1=1
         <if test="laboratoryId != null">
             and laboratoryId = #{laboratoryId}
@@ -65,48 +225,17 @@
             and number = #{number}
         </if>
 
-        <if test="classes != null">
-            and classes = #{classes}
+        <if test="classId != null">
+            and classId = #{classId}
         </if>
-        group by tag
+
+        <if test="period != null">
+            and period = #{period}
+        </if>
+
+        <if test="tag != null">
+            and tag = #{tag}
+        </if>
     </select>
-
-    <resultMap id="arrangeDtoMap" type="cn.las.bean.dto.ArrangeDTO">
-        <result column="laboratoryId" property="laboratoryId"></result>
-        <result column="userId" property="userId"></result>
-        <result column="courseId" property="courseId"></result>
-        <result column="day" property="day"></result>
-        <result column="number" property="number"></result>
-        <result column="status" property="status"></result>
-        <result column="tag" property="tag"></result>
-        <result column="period" property="period"></result>
-        <result column="classes" property="classes"></result>
-        <collection property="weeks" column="tag"
-                    select="cn.las.mapper.ArrangeMapper.findWeeksByTag">
-        </collection>
-        <collection property="sections" column="tag"
-                    select="cn.las.mapper.ArrangeMapper.findSectionsByTag">
-        </collection>
-        <collection property="laboratory" column="laboratoryId"
-                    select="cn.las.dao.LaboratoryDao.findById">
-        </collection>
-        <collection property="course" column="courseId"
-                    select="cn.las.dao.CourseDao.findCourseById">
-        </collection>
-        <collection property="user" column="userId"
-                    select="cn.las.dao.UserDao.findUserInfoById"></collection>
-    </resultMap>
-
-    <!--  通过tag查询周数  -->
-    <select id="findWeeksByTag" parameterType="java.lang.Integer" resultType="java.lang.Integer">
-        select week from arrange where tag = #{tag}
-    </select>
-
-    <!--  通过tag查询课程  -->
-    <select id="findSectionsByTag" parameterType="java.lang.Integer" resultType="java.lang.Integer">
-        select `section` from arrange where tag = #{tag}
-    </select>
-
-
 
 </mapper>

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +36,21 @@ public class ClassCotroller {
 
     @Autowired
     IClassService iClassService;
+
+
+    /**
+     * 查询班级的展示数据
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getClassInfo", method = RequestMethod.GET)
+    @ResponseBody
+    public Message getUserInfo() throws Exception {
+        HashMap<Integer, String> classInfo = iClassService.getClassInfo();
+        Message message = new Message(200, "获取班级信息成功");
+        message.putData("classInfo", classInfo);
+        return message;
+    }
 
     /**
      * 查询所有的班级信息

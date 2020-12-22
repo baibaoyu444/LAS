@@ -6,12 +6,14 @@ import cn.las.service.RoleService;
 import cn.las.service.UserService;
 import cn.las.utils.AESUtil;
 import cn.las.utils.MD5Utils;
+import com.google.common.xml.XmlEscapers;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +53,21 @@ public class UserController {
 
     @Autowired
     RoleService roleService;
+
+    /**
+     * 查询用户基本信息
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getUserInfo", method = RequestMethod.GET)
+    @ResponseBody
+    public Message getUserInfo() throws Exception {
+        HashMap<Integer, String> userInfo = userService.getUserInfo();
+        Message message = new Message(200, "获取用户数据成功");
+        message.putData("userInfo", userInfo);
+        return message;
+    }
+
 
     /**
      * @param user

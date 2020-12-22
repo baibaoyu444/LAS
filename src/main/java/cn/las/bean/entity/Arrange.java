@@ -25,6 +25,8 @@ public class Arrange {
 
     private Integer courseId;
 
+    private Integer classId;
+
     private Integer week;
 
     private Integer day;
@@ -34,8 +36,6 @@ public class Arrange {
     private Integer number;
 
     private Integer status;
-
-    private String classes;
 
     private Integer tag;
 

@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface UserDao {
@@ -62,4 +63,10 @@ public interface UserDao {
 
     @Delete("delete from user where id=#{userId}")
     void removeById(Integer userId) throws Exception;
+
+    @Select("select teacher from user where id=#{id}")
+    String selectNameById(Integer id) throws Exception;
+
+    @Select("select id, teacher from user")
+    HashMap<Integer, String> getUserInfo() throws Exception;
 }

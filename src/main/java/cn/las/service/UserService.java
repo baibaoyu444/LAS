@@ -2,6 +2,7 @@ package cn.las.service;
 
 import cn.las.bean.entity.User;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface UserService {
@@ -21,4 +22,6 @@ public interface UserService {
     void removeById(Integer userId) throws Exception;
 
     void updateOne(User user) throws Exception;
+
+    HashMap<Integer, String> getUserInfo() throws Exception;
 }

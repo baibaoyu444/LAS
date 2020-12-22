@@ -5,8 +5,11 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+import org.springframework.context.expression.MapAccessor;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface CourseDao {
 
@@ -30,4 +33,10 @@ public interface CourseDao {
 
     @Update("update course set name=#{name},time=#{time},score=#{score} where id=#{id}")
     void updateCourse(Course course) throws Exception;
+
+    @Select("select name from course where id=#{id}")
+    String selectNameById(Integer id) throws Exception;
+
+    @Select("select id, name from course")
+    HashMap<Integer, String> getCourseInfo() throws Exception;
 }

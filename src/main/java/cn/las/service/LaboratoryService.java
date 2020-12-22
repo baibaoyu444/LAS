@@ -2,6 +2,7 @@ package cn.las.service;
 
 import cn.las.bean.entity.Laboratory;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface LaboratoryService {
@@ -21,4 +22,6 @@ public interface LaboratoryService {
     Laboratory findByLaboratoryName(String labName) throws Exception;
 
     void updateLab(Laboratory lab) throws Exception;
+
+    HashMap<Integer, String> getLabInfo() throws Exception;
 }

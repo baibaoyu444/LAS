@@ -8,6 +8,7 @@ import cn.las.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -63,5 +64,10 @@ public class CourseServiceImpl implements CourseService {
     
     public List<Course> selectAll() throws Exception {
         return courseMapper.selectAll();
+    }
+
+    @Override
+    public HashMap<Integer, String> getCourseInfo() throws Exception {
+        return courseDao.getCourseInfo();
     }
 }

@@ -2,82 +2,43 @@ package cn.las.service;
 
 import cn.las.bean.dto.ArrangeDTO;
 import cn.las.bean.entity.Arrange;
-import cn.las.bean.entity.Laboratory;
+import jxl.biff.EmptyCell;
 import org.apache.ibatis.annotations.Param;
-import org.aspectj.lang.annotation.DeclareError;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 public interface ArrangeService {
+
+    List<ArrangeDTO> findArrangeByUserId(@Param("userId") Integer userId) throws Exception;
 
     List<ArrangeDTO> findAll() throws Exception;
 
     //根据课程号删除排课
     void deleteArrangeByCourseId(@Param("courseId") int courseId)throws Exception;
 
-    //通过课程号修改排课
-    void updateArrangeById(int id, int week, int day, int section)throws Exception;
-
     //通过实验室号查询排课情况
-    List<Arrange> findArrangeByLaboratoryId(@Param("laboratoryId")int laboratory,@Param("week") int week)throws Exception;
+    List<ArrangeDTO> findArrangeByLaboratoryId(@Param("laboratoryId")int laboratory)throws Exception;
 
     //通过课程号找到排课情况
-    List<Arrange> findArrangeByCourseId(@Param("courseId")int courseId)throws Exception;
+    List<ArrangeDTO> findArrangeByCourseId(@Param("courseId")int courseId)throws Exception;
 
-    //根据周数查看所有排课信息（可能不需要，先保留）
-    List<Arrange> findArrangeByweek(@Param("weeks")int weeks)throws Exception;
+    // 通过用户的id查询所有排课信息
+    List<ArrangeDTO> findArrangeByUserId(Integer userId, Integer week) throws Exception;
 
-    // 按照
-    List<Laboratory> findEmptyLabByTypeAndWeeksAndDayAndSections(
-            String type, List<Integer> weeks, Integer day, List<Integer> sections
-    ) throws Exception;
-
-    List<Integer> findEmptySectionsByLabIdAndWeeksAndDay (
-            Integer laboratoryId, List<Integer> weeks, Integer day
-    ) throws Exception;
-
-    // 按照所选周数和周几进行时间段查询
-    Set<Integer> findSectionsByWeeksAndDay(List<Integer> weeks, Integer day, String type) throws Exception;
-
-    // 按照第几周、周几、节数查询这节课的安排
-    List<Arrange> findArrangeByWeekAndDayAndSection(Integer week, Integer day, Integer section) throws Exception;
-
-    // 按照周、周几、第几段 判断是否有课程冲突
-    List<Integer> isEnableByWeeksAndDayAndSection(List<Integer> weeks, Integer day, Integer section, String type) throws Exception;
-
-    void insertArrange(Arrange arrange) throws Exception;
-
-    void addArrange(Arrange arrange) throws Exception;
-
-    List<Arrange> findArrangeByUserId(Integer userId, Integer week) throws Exception;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    // 按照arrange查询排课
     List<ArrangeDTO> findByArrange(Arrange arrange) throws Exception;
 
+    // 插入一个dto信息
     void insertArrange(ArrangeDTO dto) throws Exception;
 
+    // 通过tag删除
     void deleteByTag(Integer tag) throws Exception;
+
+    void updateByArrange(Arrange arrange) throws Exception;
+
+    void updateByWeeksDaysAndSections(Set<Integer> weeks, Set<Integer> days, Integer sectionEnum, Integer tag) throws Exception;
+
+    void updateByArrangeDTO(ArrangeDTO dto) throws Exception;
 }

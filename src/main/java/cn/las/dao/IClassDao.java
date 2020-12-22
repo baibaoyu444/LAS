@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface IClassDao {
@@ -28,4 +29,7 @@ public interface IClassDao {
 
     @Delete("delete from iclass where id=#{id}")
     void deleteByClassId(Integer id) throws Exception;
+
+    @Select("select id, name from iclass")
+    HashMap<Integer, String> getClassInfo() throws Exception;
 }

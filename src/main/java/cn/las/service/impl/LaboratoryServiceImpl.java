@@ -8,6 +8,7 @@ import cn.las.service.LaboratoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -79,5 +80,10 @@ public class LaboratoryServiceImpl implements LaboratoryService {
         if(lab.getType() == null) throw new Exception("实验室类型非空");
 
         laboratoryDao.updateLab(lab);
+    }
+
+    @Override
+    public HashMap<Integer, String> getLabInfo() throws Exception {
+        return laboratoryDao.getLabInfo();
     }
 }

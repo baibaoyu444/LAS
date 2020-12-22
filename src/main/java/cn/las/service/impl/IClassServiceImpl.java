@@ -7,6 +7,7 @@ import cn.las.service.IClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -50,5 +51,10 @@ public class IClassServiceImpl implements IClassService {
         arrangeDao.removeByCourseId(id);
         // 删除班级数据
         iClassDao.deleteByClassId(id);
+    }
+
+    @Override
+    public HashMap<Integer, String> getClassInfo() throws Exception {
+        return iClassDao.getClassInfo();
     }
 }

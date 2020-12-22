@@ -1,12 +1,9 @@
 package cn.las.bean.dto;
 
-import cn.las.bean.entity.Course;
-import cn.las.bean.entity.Laboratory;
-import cn.las.bean.entity.User;
 import lombok.Data;
 import lombok.ToString;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -21,29 +18,29 @@ public class ArrangeDTO {
 
     private Set<Integer> weeks;
 
-    private Integer day;
+    private Set<Integer> days;
 
     private Set<Integer> sections;
+
+    private Integer sectionEnum;
 
     private Integer number;
 
     private Integer status;
 
-    private String classes;
-
-    private String type;
-
-    private String tag;
+    private Integer tag;
 
     private Double period;
 
-    private Laboratory laboratory;
+    private String type;
 
-    private User user;
+    private String labName;
 
-    private Course course;
+    private String userName;
 
-    private List<String> classList;
+    private String courseName;
 
-    private Integer sectionEnum;
+    private Map<Integer, String> classes;
+
+    private Set<Integer> classIds;
 }
