@@ -1,6 +1,7 @@
 package cn.las.mapper;
 
 import cn.las.bean.entity.Declare;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -12,4 +13,7 @@ public interface DeclareMapper {
 
     List<Declare> findAll() throws Exception;
 
+    Declare findByUserId(Integer userId) throws Exception;
+
+    void updateDeclareStatus(@Param("id") Integer id, @Param("status") Integer status) throws Exception;
 }

@@ -275,11 +275,10 @@ public class ArrangeServiceImpl implements ArrangeService {
     public void updateByWeeksDaysAndSections(Set<Integer> weeks, Set<Integer> days, Integer sectionEnum, Integer tag) throws Exception {
         Arrange param = new Arrange();
 
-        List<ArrangeDTO> dtos = arrangeMapper.findArrangeByTag(tag);
-        if(dtos == null || dtos.size() == 0) {
+        ArrangeDTO dto = arrangeMapper.findArrangeByTag(tag);
+        if(dto == null) {
             throw new Exception("数据不存在");
         }
-        ArrangeDTO dto = dtos.get(0);
 
         // 获取之前的基本数据
         Integer laboratoryId = dto.getLaboratoryId();
@@ -330,5 +329,10 @@ public class ArrangeServiceImpl implements ArrangeService {
     @Override
     public void updateByArrangeDTO(ArrangeDTO dto) throws Exception {
 
+    }
+
+    @Override
+    public ArrangeDTO findArrangeDtoByTag(Integer tag) throws Exception {
+        return arrangeMapper.findArrangeByTag(tag);
     }
 }

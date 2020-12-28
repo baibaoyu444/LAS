@@ -1,11 +1,13 @@
-package cn.las.bean.entity;
+package cn.las.bean.vo;
 
 import lombok.Data;
 import lombok.ToString;
 
+import java.util.List;
+
 @Data
 @ToString
-public class Declare {
+public class DeclareVO {
 
     private Integer id;
 
@@ -17,13 +19,13 @@ public class Declare {
 
     private Integer status;
 
-    private String changeweeks;
+    private List<Integer> weeks;
 
-    private String changedays;
+    private List<Integer> days;
 
-    private Integer changesectionenum;
+    private Integer sectionenum;
 
-    private String changeclassids;
+    private List<Integer> classIds;
 
     private Integer tag;
 }

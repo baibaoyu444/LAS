@@ -21,7 +21,7 @@ public interface ArrangeMapper {
 
     List<ArrangeDTO> findAll() throws Exception;
 
-    List<ArrangeDTO> findArrangeByTag(Integer tag) throws Exception;
+    ArrangeDTO findArrangeByTag(Integer tag) throws Exception;
 
     Set<Integer> findWeeksByTag(@Param("tag") Integer tag) throws Exception;
 
@@ -29,11 +29,16 @@ public interface ArrangeMapper {
 
     Set<Integer> findSectionsByTag(@Param("tag") Integer tag) throws Exception;
 
+    // 通过arrange当中的条件查询dto数组
     List<ArrangeDTO> findByArrange(Arrange arrange) throws Exception;
 
+    // 通过tag，查询某一组课班级集合
     Set<Integer> findClassIdsByTag(@Param("tag") Integer tag) throws Exception;
 
+    // 通过一个arrange修改课程信息
     void updateByArrange(Arrange arrange) throws Exception;
 
+    // 查询原始的arrange数据
     List<Arrange> selectOriginArrange(Arrange arrange) throws Exception;
+
 }

@@ -113,7 +113,10 @@ public class UserController {
             return  new Message(403, "登录失败");
         }
 
-        return new Message(200, "登录成功");
+        // 返回当前用户的信息
+        Message message = new Message(200, "登录成功");
+        message.putData("userInfo", usr);
+        return message;
     }
 
     /**
@@ -128,9 +131,6 @@ public class UserController {
     public Message findAll() throws Exception {
         Message message = new Message(200, "查询成功");
         List<User> all = userService.findAll();
-        for (User user : all) {
-            user.setPassword(null);
-        }
         message.putData("users", all);
         return message;
     }

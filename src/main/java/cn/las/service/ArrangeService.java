@@ -41,4 +41,7 @@ public interface ArrangeService {
     void updateByWeeksDaysAndSections(Set<Integer> weeks, Set<Integer> days, Integer sectionEnum, Integer tag) throws Exception;
 
     void updateByArrangeDTO(ArrangeDTO dto) throws Exception;
+
+    // 通过tag查询一个arrangedto信息
+    ArrangeDTO findArrangeDtoByTag(Integer tag) throws Exception;
 }

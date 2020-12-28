@@ -11,4 +11,10 @@ public interface DeclareService {
     void removeById(Integer id) throws Exception;
 
     List<Declare> findAll() throws Exception;
+
+    Declare findByUserId(Integer userId) throws Exception;
+
+    void confirmDeclare(Integer id, Integer status) throws Exception;
+
+    void refuseDeclare(Integer id, Integer status) throws Exception;
 }
