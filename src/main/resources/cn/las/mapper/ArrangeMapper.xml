@@ -4,7 +4,7 @@
 <mapper namespace="cn.las.mapper.ArrangeMapper">
 
     <!-- 通过教学周查当前周排课情况（可能不需要，先保留）-->
-    <select id="findArrangeByweek" resultMap="arrangeDtoMap">
+    <select id="findArrangeByWeek" resultMap="arrangeDtoMap">
         select laboratoryId,userId,courseId,week,day,section,number,status,classId,tag,period,sectionEnum
         from arrange
         where week=#{week}

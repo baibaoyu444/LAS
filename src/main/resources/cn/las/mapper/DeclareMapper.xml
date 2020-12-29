@@ -4,30 +4,30 @@
 <mapper namespace="cn.las.mapper.DeclareMapper">
 
     <insert id="insertDeclare" parameterType="cn.las.bean.entity.Declare">
-        insert into declare (
-            type, reason, userId, status, tag,
-            changeweeks, changedays, changesections, changeclassids
+        insert into `declare`(
+            `type`, reason, userId, status, tag,
+            changeweeks, changedays, changesectionenum, changeclassids
         )
-        values (
+        values(
             #{type}, #{reason}, #{userId}, #{status}, #{tag},
-            #{changeweeks}, #{changedays}, #{changesections}, #{changeclassids}
-        );
+            #{changeweeks}, #{changedays}, #{changesectionenum}, #{changeclassids}
+        )
     </insert>
 
     <delete id="removeById" parameterType="java.lang.Integer">
-        delete from declare where id = #{id}
+        delete from `declare` where id = #{id}
     </delete>
 
     <select id="findAll" resultType="cn.las.bean.entity.Declare">
-        select * from declare;
+        select * from `declare`
     </select>
 
     <select id="findByUserId" resultType="cn.las.bean.entity.Declare">
-        select * from declare where userId = #{userId}
+        select * from `declare` where userId = #{userId}
     </select>
 
     <update id="updateDeclareStatus" parameterType="java.lang.Integer">
-        update declare set status=#{status} where id=#{id}
+        update `declare` set status=#{status} where id=#{id}
     </update>
 
 </mapper>

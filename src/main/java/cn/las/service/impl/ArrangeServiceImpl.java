@@ -36,6 +36,7 @@ public class ArrangeServiceImpl implements ArrangeService {
     @Autowired
     LaboratoryDao laboratoryDao;
 
+    // 查询所有排课信息
     @Override
     public List<ArrangeDTO> findAll() throws Exception {
         return arrangeMapper.findAll();
@@ -44,26 +45,6 @@ public class ArrangeServiceImpl implements ArrangeService {
     @Override
     public void deleteArrangeByCourseId(int courseId)throws Exception{
         arrangeMapper.deleteByCourseId(courseId);
-    }
-
-    @Override
-    public List<ArrangeDTO> findArrangeByLaboratoryId(int laboratoryId)throws Exception{
-        return arrangeMapper.findArrangeByLaboratoryId(laboratoryId);
-    }
-
-    @Override
-    public List<ArrangeDTO> findArrangeByUserId(Integer userId, Integer week) throws Exception {
-        return null;
-    }
-
-    @Override
-    public List<ArrangeDTO> findArrangeByCourseId(int courseId)throws Exception{
-        return arrangeMapper.findArrangeByCourseId(courseId);
-    }
-
-    @Override
-    public List<ArrangeDTO> findArrangeByUserId(Integer userId) throws Exception {
-        return arrangeMapper.findArrangeByUserId(userId);
     }
 
     /**

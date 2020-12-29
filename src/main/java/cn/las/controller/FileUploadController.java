@@ -19,7 +19,6 @@ import java.util.List;
 
 @Controller
 @RequestMapping("file")
-@Api(tags = "文件上传接口")
 public class FileUploadController {
 
     @Autowired
@@ -40,12 +39,6 @@ public class FileUploadController {
     @RequestMapping(value = "uploadFiles", method = RequestMethod.POST)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    @ApiOperation(
-            httpMethod = "POST",
-            notes = "上传系统文件功能</br>"+
-                    "输入Form-Data数据",
-            value = "上传系统数据"
-    )
     public Message uploadFiles(@RequestParam("file") MultipartFile [] file) {
 
         StringBuffer buffer = new StringBuffer();

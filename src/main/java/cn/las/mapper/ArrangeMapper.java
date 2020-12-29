@@ -9,24 +9,33 @@ import java.util.Set;
 
 public interface ArrangeMapper {
 
+    // 通过课程id删除数据
     void deleteByCourseId(@Param("courseId") int courseId)throws Exception;
 
+    // 通过实验室的id查询排课信息
     List<ArrangeDTO> findArrangeByLaboratoryId(@Param("laboratoryId") int laboratoryId)throws Exception;
 
+    // 通过课程的id查询排课信息
     List<ArrangeDTO> findArrangeByCourseId(@Param("courseId") int courseId)throws Exception;
 
+    // 通过用户id查询排课信息
     List<ArrangeDTO> findArrangeByUserId(@Param("userId") int userId)throws Exception;
 
-    List<ArrangeDTO> findArrangeByweek(@Param("weeks") int weeks)throws Exception;
+    List<ArrangeDTO> findArrangeByWeek(@Param("week") int week)throws Exception;
 
+    // 查询所有的排课信息
     List<ArrangeDTO> findAll() throws Exception;
 
+    // 通过tag查询排课信息
     ArrangeDTO findArrangeByTag(Integer tag) throws Exception;
 
+    // 按照tag查询weeks集合
     Set<Integer> findWeeksByTag(@Param("tag") Integer tag) throws Exception;
 
+    // 按照tag查询days集合
     Set<Integer> findDaysByTag(@Param("tag") Integer tag) throws Exception;
 
+    // 按照tag查询sections信息
     Set<Integer> findSectionsByTag(@Param("tag") Integer tag) throws Exception;
 
     // 通过arrange当中的条件查询dto数组
@@ -40,5 +49,4 @@ public interface ArrangeMapper {
 
     // 查询原始的arrange数据
     List<Arrange> selectOriginArrange(Arrange arrange) throws Exception;
-
 }

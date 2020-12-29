@@ -45,7 +45,6 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("user")
-@Api(tags = "用户接口")
 public class UserController {
 
     @Autowired
@@ -88,12 +87,6 @@ public class UserController {
      */
     @RequestMapping(value = "login", method = RequestMethod.POST)
     @ResponseBody
-    @ApiOperation(
-            httpMethod = "POST",
-            notes = "登录功能接口</br>"+
-                    "输入JSON数据: {\"username\":\"111\", \"password\":\"123456\",\"roleId\":1}",
-            value = "登录功能"
-    )
     public Message login(@RequestBody User user) throws Exception {
         // 进行用户信息查询
         User usr = userService.findByUsername(user.getUsername());
@@ -127,7 +120,6 @@ public class UserController {
      */
     @RequestMapping(value = "findAll", method = RequestMethod.GET)
     @ResponseBody
-    @ApiOperation(httpMethod = "GET", notes = "查询所有用户的信息", value = "查询所有用户")
     public Message findAll() throws Exception {
         Message message = new Message(200, "查询成功");
         List<User> all = userService.findAll();
@@ -155,12 +147,6 @@ public class UserController {
     @RequestMapping(value = "addUser", method = RequestMethod.POST)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    @ApiOperation(
-            httpMethod = "POST",
-            notes = "增加用户功能</br>" +
-                    "输入JSON数据:{\"username\":\"111\", \"password\":\"123456\",\"teacher\":\"xxx\"}",
-            value = "添加用户"
-    )
     public Message addUser(@RequestBody User user) throws Exception {
         // 对密码进行加密
         user.setPassword(MD5Utils.MD5Encode(user.getPassword()));
@@ -198,12 +184,6 @@ public class UserController {
     @RequestMapping(value = "changePassword", method = RequestMethod.POST)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    @ApiOperation(
-            httpMethod = "POST",
-            notes = "修改密码功能</br>" +
-                    "输入JSON数据:{\"account\":\"111\", \"old_password\":\"123456\",\"new_password\":\"xxx\"}",
-            value = "修改密码"
-    )
     public Message changePassword(@RequestBody Map<String, Object> datas) throws Exception {
         Message message = new Message();
 
@@ -255,12 +235,6 @@ public class UserController {
     @RequestMapping(value = "removeById", method = RequestMethod.POST)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    @ApiOperation(
-            httpMethod = "POST",
-            notes = "删除用户功能</br>" +
-                    "输入JSON数据:{\"userId\":2}",
-            value = "删除用户"
-    )
     public Message removeById(@RequestBody Map<String, Object> maps) {
         Integer userId = (Integer) maps.get("userId");
         if(userId == null) {
@@ -288,12 +262,6 @@ public class UserController {
      */
     @RequestMapping(value = "findById", method = RequestMethod.GET)
     @ResponseBody
-    @ApiOperation(
-            httpMethod = "GET",
-            notes = "按照id查询用户功能</br>" +
-                    "输入JSON数据:{\"userId\":2}",
-            value = "查询用户BY用户id"
-    )
     public Message findById(@RequestBody Map<String, Object> maps) throws Exception {
         User userId = userService.findUserInfoById((Integer) maps.get("userId"));
         Message message = new Message(200, "查询成功");

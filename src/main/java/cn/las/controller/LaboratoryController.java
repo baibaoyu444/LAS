@@ -19,7 +19,6 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("laboratory")
-@Api(tags = "实验室接口")
 public class LaboratoryController {
 
     @Autowired
@@ -33,11 +32,6 @@ public class LaboratoryController {
      */
     @RequestMapping(value = "getLabInfo", method = RequestMethod.GET)
     @ResponseBody
-    @ApiOperation(
-            httpMethod = "GET",
-            notes = "获取实验室数据",
-            value = "获取实验室数据"
-    )
     public Message getLabInfo() throws Exception {
         // 添加实验室信息
         HashMap<Integer, String> labInfo = laboratoryService.getLabInfo();
@@ -67,12 +61,6 @@ public class LaboratoryController {
      */
     @RequestMapping(value = "addLab", method = RequestMethod.POST)
     @ResponseBody
-    @ApiOperation(
-            httpMethod = "POST",
-            notes = "新增实验室接口</br>"+
-                    "输入JSON数据: {\"name\": \"MAC上级实验室\",\"type\": \"mac教室\",\"size\": 60,\"location\": \"F区205\"}",
-            value = "新增实验室"
-    )
     public Message addLaboratory(@RequestBody Laboratory lab) {
         // 添加实验室信息
         try {
@@ -101,12 +89,6 @@ public class LaboratoryController {
     @RequestMapping(value = "deleteById", method = RequestMethod.POST)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    @ApiOperation(
-            httpMethod = "POST",
-            notes = "删除实验室信息</br>"+
-                    "输入JSON数据: {\"id\":11}",
-            value = "删除实验室"
-    )
     public Message deleteLaboratoryById(@RequestBody Map<String, Object> maps) {
         // 获取参数+非空验证
         Integer id = (Integer) maps.get("id");
@@ -131,11 +113,6 @@ public class LaboratoryController {
      */
     @RequestMapping(value = "findAll", method = RequestMethod.GET)
     @ResponseBody
-    @ApiOperation(
-            httpMethod = "GET",
-            notes = "查询所有实验室接口",
-            value = "查询所有实验室"
-    )
     public Message findAll() {
         List<Laboratory> all = null;
         try {
@@ -167,12 +144,6 @@ public class LaboratoryController {
     @RequestMapping(value = "updateLab", method = RequestMethod.POST)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    @ApiOperation(
-            httpMethod = "POST",
-            notes = "更新实验室</br>"+
-                    "输入JSON数据: {\"id\":11,\"name\": \"test\",\"type\": \"test\",\"size\": 20,\"location\": \"xxx\",\"status\": \"0/1\",\"limitpro\": \"课程名s\"}",
-            value = "更新实验室"
-    )
     public Message updateLaboratory(@RequestBody Laboratory lab) {
         try {
             laboratoryService.updateLab(lab);

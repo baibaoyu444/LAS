@@ -13,7 +13,7 @@ public interface DeclareMapper {
 
     List<Declare> findAll() throws Exception;
 
-    Declare findByUserId(Integer userId) throws Exception;
+    List<Declare> findByUserId(Integer userId) throws Exception;
 
     void updateDeclareStatus(@Param("id") Integer id, @Param("status") Integer status) throws Exception;
 }

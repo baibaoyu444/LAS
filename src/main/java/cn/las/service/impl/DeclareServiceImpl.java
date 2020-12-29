@@ -40,17 +40,19 @@ public class DeclareServiceImpl implements DeclareService {
     }
 
     @Override
-    public Declare findByUserId(Integer userId) throws Exception {
+    public List<Declare> findByUserId(Integer userId) throws Exception {
         return declareMapper.findByUserId(userId);
     }
 
+    // 管路员批准修改申请  的服务
     @Override
     public void confirmDeclare(Integer id, Integer status) throws Exception {
         // 首先更改申请的状态
         declareMapper.updateDeclareStatus(id, status);
 
         // 按照id查询排课申请的信息
-        Declare declare = declareMapper.findByUserId(id);
+        List<Declare> declares = declareMapper.findByUserId(id);
+        Declare declare = declares.get(0);
 
         DeclareVO vo = new DeclareVO();
         DeclareConverter.entity2vo(declare, vo);
@@ -89,12 +91,18 @@ public class DeclareServiceImpl implements DeclareService {
             List<Integer> classIds = vo.getClassIds();
 
             // 按照tag获取排课信息 除了周数之外
+            Integer tag = declare.getTag();
+            
+            // 获取原来的dto数据
+            ArrangeDTO dto = arrangeService.findArrangeDtoByTag(tag);
 
-            // 生成排课信息 使用原来的tag信息
+            // 删除原来的数据
+            arrangeService.deleteByTag(tag);
 
-
+            // 插入新的数据
+            dto.setClassIds(new HashSet<Integer>(classIds));
+            arrangeService.insertArrange(dto);
         }
-
     }
 
     @Override

@@ -12,7 +12,7 @@ public interface DeclareService {
 
     List<Declare> findAll() throws Exception;
 
-    Declare findByUserId(Integer userId) throws Exception;
+    List<Declare> findByUserId(Integer userId) throws Exception;
 
     void confirmDeclare(Integer id, Integer status) throws Exception;
 

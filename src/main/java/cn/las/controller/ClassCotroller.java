@@ -19,19 +19,6 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("class")
-@Api(tags = "班级接口")
-/**
- *
- *
- *
- *
- * 这个接口目前是废弃的，还在等待发掘
- *
- *
- *
- *
- *
- */
 public class ClassCotroller {
 
     @Autowired
@@ -59,11 +46,6 @@ public class ClassCotroller {
      */
     @RequestMapping(value = "findAll", method = RequestMethod.POST)
     @ResponseBody
-    @ApiOperation(
-            httpMethod = "GET",
-            notes = "查询所有班级信息接口",
-            value = "查询所有班级信息"
-    )
     public Message findAll() {
         List<IClass> all = null;
         try {
@@ -88,12 +70,6 @@ public class ClassCotroller {
     @RequestMapping(value = "removeById", method = RequestMethod.POST)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    @ApiOperation(
-            httpMethod = "POST",
-            notes = "删除班级信息接口</br>"+
-                    "输入JSON数据: {\"classId\":11}",
-            value = "删除班级信息"
-    )
     public Message removeById(@RequestBody Map<String, Object> maps) {
         Integer classId = (Integer) maps.get("classId");
 
@@ -119,12 +95,6 @@ public class ClassCotroller {
     @RequestMapping(value = "addClass", method = RequestMethod.POST)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    @ApiOperation(
-            httpMethod = "POST",
-            notes = "增加班级信息接口</br>"+
-                    "输入JSON数据: {\"name\":\"计科226班\",\"number\":39}",
-            value = "增加班级信息"
-    )
     public Message addIClass(@RequestBody IClass iClass) {
         try {
             iClassService.addClass(iClass);
@@ -148,12 +118,6 @@ public class ClassCotroller {
     @RequestMapping(value = "updateClass", method = RequestMethod.POST)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    @ApiOperation(
-            httpMethod = "POST",
-            notes = "修改班级信息接口</br>"+
-                    "输入JSON数据: {\"id\":11,\"name\":\"计科226班\",\"number\":30}",
-            value = "修改班级信息"
-    )
     public Message updateClassById(@RequestBody IClass iClass) {
         try {
             iClassService.updateClass(iClass);
