@@ -40,7 +40,7 @@ public class CourseController {
     @RequestMapping(value = "getCourseInfo", method = RequestMethod.GET)
     @ResponseBody
     public Message getCourseInfo() throws Exception {
-        HashMap<Integer, String> courseInfo = courseService.getCourseInfo();
+        HashMap<Integer, Map<String, Object>> courseInfo = courseService.getCourseInfo();
         Message message = new Message(200, "获取课程成功");
         message.putData("courseInfo", courseInfo);
         return message;
@@ -126,7 +126,7 @@ public class CourseController {
      * }
      * @return
      */
-    @RequestMapping(value = "deleteById", method = RequestMethod.POST)
+    @RequestMapping(value = "deleteById", method = RequestMethod.DELETE)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
     public Message deleteById(@RequestBody Map<String, Object> maps) {
@@ -150,11 +150,12 @@ public class CourseController {
      * {
      *     id:...,
      *     name:...,
-     *     time:...
+     *     time:...,
+     *     score:1
      * }
      * @return
      */
-    @RequestMapping(value = "updateCourse", method = RequestMethod.POST)
+    @RequestMapping(value = "updateCourse", method = RequestMethod.PUT)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
     public Message updateCourse(@RequestBody Course course) {

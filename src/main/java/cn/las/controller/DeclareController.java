@@ -7,6 +7,8 @@ import cn.las.converter.DeclareConverter;
 import cn.las.service.DeclareService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -71,6 +73,9 @@ public class DeclareController {
         DeclareConverter.vo2entity(vo, declare);
         try {
             declareService.insertDeclare(declare);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return new Message(403, e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return new Message(500, "服务器错误");
@@ -164,6 +169,7 @@ public class DeclareController {
      */
     @RequestMapping(value = "/confirmDeclare", method = RequestMethod.POST)
     @ResponseBody
+    @Transactional(rollbackFor = Exception.class)
     public Message confirmDeclare(@RequestBody Map<String, Object> maps) {
 
         Integer id = (Integer) maps.get("id");
@@ -172,8 +178,13 @@ public class DeclareController {
 
         try {
             declareService.confirmDeclare(id, status);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return new Message(403, e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new Message(500, "服务器错误");
         }
         return new Message(200, "操作成功");
@@ -203,5 +214,18 @@ public class DeclareController {
             return new Message(500, "服务器错误");
         }
         return new Message(200, "操作成功");
+    }
+
+    @RequestMapping(value = "removeById", method = RequestMethod.DELETE)
+    @ResponseBody
+    public Message removeById(@RequestBody Map<String, Object> maps) {
+        Integer id = (Integer) maps.get("id");
+        try {
+            declareService.removeById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Message(500, "服务器错误");
+        }
+        return new Message(200, "删除成功");
     }
 }

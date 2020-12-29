@@ -16,4 +16,6 @@ public interface DeclareMapper {
     List<Declare> findByUserId(Integer userId) throws Exception;
 
     void updateDeclareStatus(@Param("id") Integer id, @Param("status") Integer status) throws Exception;
+    
+    Declare findById(@Param("id") Integer id) throws Exception;
 }

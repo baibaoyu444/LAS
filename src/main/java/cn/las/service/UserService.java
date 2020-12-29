@@ -4,6 +4,7 @@ import cn.las.bean.entity.User;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
 
@@ -23,5 +24,5 @@ public interface UserService {
 
     void updateOne(User user) throws Exception;
 
-    HashMap<Integer, String> getUserInfo() throws Exception;
+    HashMap<Integer, Map<String, Object>> getUserInfo() throws Exception;
 }

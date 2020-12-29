@@ -1,10 +1,7 @@
 package cn.las.dao;
 
 import cn.las.bean.entity.Course;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 import org.springframework.context.expression.MapAccessor;
 
 import java.util.HashMap;
@@ -38,5 +35,6 @@ public interface CourseDao {
     String selectNameById(Integer id) throws Exception;
 
     @Select("select id, name from course")
-    HashMap<Integer, String> getCourseInfo() throws Exception;
+    @MapKey("id")
+    HashMap<Integer, Map<String, Object>> getCourseInfo() throws Exception;
 }

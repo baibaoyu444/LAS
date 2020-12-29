@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -70,7 +71,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public HashMap<Integer, String> getUserInfo() throws Exception {
+    public HashMap<Integer, Map<String, Object>> getUserInfo() throws Exception {
         return userDao.getUserInfo();
     }
 }

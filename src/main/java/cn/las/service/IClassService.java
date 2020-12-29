@@ -4,6 +4,7 @@ import cn.las.bean.entity.IClass;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface IClassService {
     IClass findByClassName(String classname) throws Exception;
@@ -18,5 +19,5 @@ public interface IClassService {
 
     void deleteByClassId(Integer id) throws Exception;
 
-    HashMap<Integer, String> getClassInfo() throws Exception;
+    HashMap<Integer, Map<String, Object>> getClassInfo() throws Exception;
 }

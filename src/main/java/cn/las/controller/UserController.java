@@ -54,14 +54,15 @@ public class UserController {
     RoleService roleService;
 
     /**
-     * 查询用户基本信息
+     * 查询所有用户基本信息
+     *
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/getUserInfo", method = RequestMethod.GET)
     @ResponseBody
     public Message getUserInfo() throws Exception {
-        HashMap<Integer, String> userInfo = userService.getUserInfo();
+        HashMap<Integer, Map<String, Object>> userInfo = userService.getUserInfo();
         Message message = new Message(200, "获取用户数据成功");
         message.putData("userInfo", userInfo);
         return message;
@@ -207,7 +208,7 @@ public class UserController {
             return message;
         }
 
-        String secretOldPswd = AESUtil.encrypt(oldPassword);
+        String secretOldPswd = MD5Utils.MD5Encode(oldPassword);
         if(!secretOldPswd.equals(user.getPassword())) {
             message.setCode(502);
             message.setMessage("旧密码输入错误");
@@ -215,7 +216,7 @@ public class UserController {
         }
 
         // 验证通过开始修改当前账户的密码
-        userService.changePassword(username, AESUtil.encrypt(newPassword));
+        userService.changePassword(username, MD5Utils.MD5Encode(newPassword));
 
         message.setCode(200);
         message.setMessage("修改密码成功");
@@ -232,7 +233,7 @@ public class UserController {
      *
      * 测试通过-白宝玉
      */
-    @RequestMapping(value = "removeById", method = RequestMethod.POST)
+    @RequestMapping(value = "removeById", method = RequestMethod.DELETE)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
     public Message removeById(@RequestBody Map<String, Object> maps) {
@@ -272,6 +273,13 @@ public class UserController {
     /**
      * 按照id修改用户基本信息功能
      * @param user
+     * {
+     *    "userId":2,
+     *    "username":"5656",
+     *    "teacher":"xxx",
+     *    "email":"3274848827@qq.com",
+     *    "phone":"12345"
+     * }
      * @return
      * @throws Exception
      *
@@ -279,12 +287,6 @@ public class UserController {
      */
     @RequestMapping(value = "/", method = RequestMethod.PUT)
     @ResponseBody
-    @ApiOperation(
-            httpMethod = "PUT",
-            notes = "按照id查询用户功能</br>" +
-                    "输入JSON数据:{\"userId\":2,\"username\":\"111\", \"teacher\":\"xxx\", \"email\":\"xxx\", \"phone\":\"xxx\"}",
-            value = "查询用户BY用户id"
-    )
     @Transactional(rollbackFor = Throwable.class)
     public Message updateOne(@RequestBody User user) throws Exception {
         userService.updateOne(user);

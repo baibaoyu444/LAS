@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -67,7 +68,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public HashMap<Integer, String> getCourseInfo() throws Exception {
+    public HashMap<Integer, Map<String, Object>> getCourseInfo() throws Exception {
         return courseDao.getCourseInfo();
     }
 }

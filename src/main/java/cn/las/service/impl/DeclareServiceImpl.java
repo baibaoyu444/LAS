@@ -26,6 +26,9 @@ public class DeclareServiceImpl implements DeclareService {
 
     @Override
     public void insertDeclare(Declare declare) throws Exception {
+        // 事先检查tag是否存在
+        ArrangeDTO dto = arrangeService.findArrangeDtoByTag(declare.getTag());
+        if(dto == null) throw new IllegalArgumentException("该排课信息不存在");
         declareMapper.insertDeclare(declare);
     }
 
@@ -51,8 +54,7 @@ public class DeclareServiceImpl implements DeclareService {
         declareMapper.updateDeclareStatus(id, status);
 
         // 按照id查询排课申请的信息
-        List<Declare> declares = declareMapper.findByUserId(id);
-        Declare declare = declares.get(0);
+        Declare declare = declareMapper.findById(id);
 
         DeclareVO vo = new DeclareVO();
         DeclareConverter.entity2vo(declare, vo);

@@ -3,8 +3,6 @@ package cn.las.controller;
 import cn.las.bean.dto.ArrangeDTO;
 import cn.las.bean.entity.*;
 import cn.las.service.*;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +43,6 @@ import java.util.*;
  */
 @Controller
 @RequestMapping("arrange")
-@Api(tags = "排课接口")
 public class ArrangeController {
 
     // 注入arrange服务层对象
@@ -380,6 +377,7 @@ public class ArrangeController {
         if (!errors.isEmpty()) {
             Message message = new Message(403, "存在冲突");
             message.putData("errors", errors);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return message;
         }
 
@@ -472,8 +470,10 @@ public class ArrangeController {
     public Message updateArrangeByTag(@RequestBody Map<String, Object> maps) {
         // 获取前端传输数据
         Integer tag = (Integer) maps.get("tag");
-        Set<Integer> weeks = (Set<Integer>) maps.get("weeks");
-        Set<Integer> days = (Set<Integer>) maps.get("days");
+        List<Integer> week = (List<Integer>) maps.get("weeks");
+        Set<Integer> weeks = new HashSet<Integer>(week);
+        List<Integer> day = (List<Integer>) maps.get("days");
+        Set<Integer> days = new HashSet<Integer>(day);
         Integer sectionEnum = (Integer) maps.get("sectionEnum");
         // 对数据进行封装
 
@@ -483,10 +483,13 @@ public class ArrangeController {
             arrangeService.updateByWeeksDaysAndSections(weeks, days, sectionEnum, tag);
         } catch (IllegalArgumentException e) {
             // 当出现错误的时候，直接回滚
+            e.printStackTrace();
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new Message(501, e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return new Message(500, "服务器错误");
         }
         return new Message(200, "操作成功");
     }
@@ -501,16 +504,16 @@ public class ArrangeController {
     @RequestMapping(value = "/deleteByTag", method = RequestMethod.DELETE)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    @ApiOperation(
-            httpMethod = "DELETE",
-            notes = "通过tag删除课程信息</br>"+
-                    "输入JSON数据: {\"tag\":11}",
-            value = "通过tag删除课程信息"
-    )
-    public Message deleteByTag(@RequestBody Map<String, Object> maps) throws Exception {
+    public Message deleteByTag(@RequestBody Map<String, Object> maps) {
         Integer tag = (Integer) maps.get("tag");
         if(tag == null) return new Message(403, "参数不全");
-        arrangeService.deleteByTag(tag);
+        try {
+            arrangeService.deleteByTag(tag);
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return new Message(500, "服务器错误");
+        }
         return new Message(200, "操作成功");
     }
 }

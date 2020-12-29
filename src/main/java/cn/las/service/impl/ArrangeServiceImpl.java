@@ -258,7 +258,7 @@ public class ArrangeServiceImpl implements ArrangeService {
 
         ArrangeDTO dto = arrangeMapper.findArrangeByTag(tag);
         if(dto == null) {
-            throw new Exception("数据不存在");
+            throw new IllegalArgumentException("数据不存在");
         }
 
         // 获取之前的基本数据
@@ -266,6 +266,7 @@ public class ArrangeServiceImpl implements ArrangeService {
         Integer courseId = dto.getCourseId();
         Integer userId = dto.getUserId();
         Integer number = dto.getNumber();
+        Integer status = dto.getStatus();
         Set<Integer> classIds = dto.getClassIds();
         Double period = dto.getPeriod();
 
@@ -277,8 +278,9 @@ public class ArrangeServiceImpl implements ArrangeService {
         last.setPeriod(period);
         last.setTag(tag);
         last.setSectionEnum(sectionEnum);
+        last.setStatus(status);
 
-        // 需要事先删除 之后一个个插入
+        // 需要事先删除之前的排课信息 之后一个个插入
         arrangeDao.removeByTag(tag);
 
         for (Integer week : weeks) {
@@ -289,9 +291,12 @@ public class ArrangeServiceImpl implements ArrangeService {
                         param.setDay(day);
                         param.setSection(section);
                         param.setClassId(classId);
+                        param.setLaboratoryId(laboratoryId);
 
+
+                        // 检查时间安排是否冲突
                         List<Arrange> arranges = arrangeMapper.selectOriginArrange(param);
-                        if(arranges != null || arranges.size() != 0) {
+                        if(arranges.size() != 0) {
                             throw new IllegalArgumentException("该时间段该实验室无空闲时间");
                         }
 

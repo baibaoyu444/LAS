@@ -1,13 +1,11 @@
 package cn.las.dao;
 
 import cn.las.bean.entity.IClass;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface IClassDao {
 
@@ -20,10 +18,10 @@ public interface IClassDao {
     @Select("select * from iclass")
     List<IClass> findAll() throws Exception;
 
-    @Insert("insert into iclass(name, number) values(#{name}, #{number})")
+    @Insert("insert into iclass(college, profession, name, number) values(#{college}, #{profession}, #{name}, #{number})")
     void addClass(IClass iClass) throws Exception;
 
-    @Update("update iclass set name=#{name}, number=#{number} " +
+    @Update("update iclass set college=#{college}, profession=#{profession}, name=#{name}, number=#{number} " +
             " where id=#{id}")
     void updateClass(IClass iClass) throws Exception;
 
@@ -31,5 +29,6 @@ public interface IClassDao {
     void deleteByClassId(Integer id) throws Exception;
 
     @Select("select id, name from iclass")
-    HashMap<Integer, String> getClassInfo() throws Exception;
+    @MapKey("id")
+    HashMap<Integer, Map<String, Object>> getClassInfo() throws Exception;
 }

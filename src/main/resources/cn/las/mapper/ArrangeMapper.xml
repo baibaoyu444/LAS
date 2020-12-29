@@ -5,7 +5,7 @@
 
     <!-- 通过教学周查当前周排课情况（可能不需要，先保留）-->
     <select id="findArrangeByWeek" resultMap="arrangeDtoMap">
-        select laboratoryId,userId,courseId,week,day,section,number,status,classId,tag,period,sectionEnum
+        select laboratoryId,userId,courseId,week,`day`,`section`,`number`,status,classId,tag,period,sectionEnum
         from arrange
         where week=#{week}
         group by tag;
@@ -13,7 +13,7 @@
 
     <!-- 根据实验室id找到当前实验室排课情况 -->
     <select id="findArrangeByLaboratoryId" resultMap="arrangeDtoMap">
-        select laboratoryId,userId,courseId,week,day,section,number,status,classId,tag,period,sectionEnum
+        select laboratoryId,userId,courseId,week,`day`,`section`,`number`,status,classId,tag,period,sectionEnum
         from arrange
         where laboratoryId=#{laboratoryId}
         group by tag;
@@ -21,14 +21,14 @@
 
     <!-- 根据课程id找到当前课程排课情况-->
     <select id="findArrangeByCourseId" resultMap="arrangeDtoMap">
-        select laboratoryId,userId,courseId,week,day,section,number,status,classId,tag,period,sectionEnum
+        select laboratoryId,userId,courseId,week,`day`,`section`,`number`,status,classId,tag,period,sectionEnum
         from arrange
         where courseId=#{courseId}
         group by tag;
     </select>
 
     <select id="findArrangeByUserId" resultMap="arrangeDtoMap">
-        select laboratoryId,userId,courseId,week,day,section,number,status,classId,tag,period,sectionEnum
+        select laboratoryId,userId,courseId,week,`day`,`section`,`number`,status,classId,tag,period,sectionEnum
         from arrange
         where userId=#{userId}
         group by tag;
@@ -39,21 +39,21 @@
     </delete>
 
     <select id="findArrangeByTag" resultMap="arrangeDtoMap">
-        select select laboratoryId,userId,courseId,week,day,section,number,status,classId,tag,period,sectionEnum
+        select laboratoryId,userId,courseId,week,`day`,`section`,`number`,status,classId,tag,period,sectionEnum
         from arrange
         where tag = #{tag}
         group by tag
     </select>
 
     <select id="findAll" resultMap="arrangeDtoMap">
-        select laboratoryId,userId,courseId,week,day,section,number,status,classId,tag,period,sectionEnum
+        select laboratoryId,userId,courseId,week,`day`,`section`,`number`,status,classId,tag,period,sectionEnum
         from arrange
         group by tag
     </select>
 
     <!--  通过week和userid查询课表  -->
     <select id="findByArrange" resultMap="arrangeDtoMap">
-        select laboratoryId,userId,courseId,week,day,section,number,status,classId,tag,period,sectionEnum
+        select laboratoryId,userId,courseId,week,`day`,`section`,`number`,status,classId,tag,period,sectionEnum
         from arrange where 1=1
         <if test="laboratoryId != null">
             and laboratoryId = #{laboratoryId}
@@ -72,15 +72,15 @@
         </if>
 
         <if test="day != null">
-            and day = #{day}
+            and `day` = #{day}
         </if>
 
         <if test="section != null">
-            and section = #{section}
+            and `section` = #{section}
         </if>
 
         <if test="number != null">
-            and number = #{number}
+            and `number` = #{number}
         </if>
 
         <if test="classId != null">
@@ -170,15 +170,15 @@
         </if>
 
         <if test="day != null">
-            ,day = #{day}
+            ,`day` = #{day}
         </if>
 
         <if test="section != null">
-            ,section = #{section}
+            ,`section` = #{section}
         </if>
 
         <if test="number != null">
-            ,number = #{number}
+            ,`number` = #{number}
         </if>
 
         <if test="classId != null">
@@ -214,15 +214,15 @@
         </if>
 
         <if test="day != null">
-            and day = #{day}
+            and `day` = #{day}
         </if>
 
         <if test="section != null">
-            and section = #{section}
+            and `section` = #{section}
         </if>
 
         <if test="number != null">
-            and number = #{number}
+            and `number` = #{number}
         </if>
 
         <if test="classId != null">

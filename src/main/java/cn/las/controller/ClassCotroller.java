@@ -33,7 +33,7 @@ public class ClassCotroller {
     @RequestMapping(value = "/getClassInfo", method = RequestMethod.GET)
     @ResponseBody
     public Message getUserInfo() throws Exception {
-        HashMap<Integer, String> classInfo = iClassService.getClassInfo();
+        HashMap<Integer, Map<String, Object>> classInfo = iClassService.getClassInfo();
         Message message = new Message(200, "获取班级信息成功");
         message.putData("classInfo", classInfo);
         return message;
@@ -44,7 +44,7 @@ public class ClassCotroller {
      *
      * @return
      */
-    @RequestMapping(value = "findAll", method = RequestMethod.POST)
+    @RequestMapping(value = "findAll", method = RequestMethod.GET)
     @ResponseBody
     public Message findAll() {
         List<IClass> all = null;
@@ -67,7 +67,7 @@ public class ClassCotroller {
      * }
      * @return
      */
-    @RequestMapping(value = "removeById", method = RequestMethod.POST)
+    @RequestMapping(value = "removeById", method = RequestMethod.DELETE)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
     public Message removeById(@RequestBody Map<String, Object> maps) {
@@ -115,7 +115,7 @@ public class ClassCotroller {
      * }
      * @return
      */
-    @RequestMapping(value = "updateClass", method = RequestMethod.POST)
+    @RequestMapping(value = "updateClass", method = RequestMethod.PUT)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
     public Message updateClassById(@RequestBody IClass iClass) {

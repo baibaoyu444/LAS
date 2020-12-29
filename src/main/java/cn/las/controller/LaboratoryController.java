@@ -3,8 +3,6 @@ package cn.las.controller;
 import cn.las.bean.entity.Laboratory;
 import cn.las.bean.entity.Message;
 import cn.las.service.LaboratoryService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +32,7 @@ public class LaboratoryController {
     @ResponseBody
     public Message getLabInfo() throws Exception {
         // 添加实验室信息
-        HashMap<Integer, String> labInfo = laboratoryService.getLabInfo();
+        HashMap<Integer, Map<String, Object>> labInfo = laboratoryService.getLabInfo();
 
         // 返回成功信息
         Message message = new Message(200, "获取实验室信息成功");
@@ -86,7 +84,7 @@ public class LaboratoryController {
      *
      * 测试通过--白宝玉
      */
-    @RequestMapping(value = "deleteById", method = RequestMethod.POST)
+    @RequestMapping(value = "deleteById", method = RequestMethod.DELETE)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
     public Message deleteLaboratoryById(@RequestBody Map<String, Object> maps) {
@@ -141,7 +139,7 @@ public class LaboratoryController {
      *
      * 测试通过--白宝玉
      */
-    @RequestMapping(value = "updateLab", method = RequestMethod.POST)
+    @RequestMapping(value = "updateLab", method = RequestMethod.PUT)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
     public Message updateLaboratory(@RequestBody Laboratory lab) {

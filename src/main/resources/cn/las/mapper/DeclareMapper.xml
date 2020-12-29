@@ -30,4 +30,7 @@
         update `declare` set status=#{status} where id=#{id}
     </update>
 
+    <select id="findById" parameterType="java.lang.Integer" resultType="cn.las.bean.entity.Declare">
+        select * from `declare` where id=#{id}
+    </select>
 </mapper>

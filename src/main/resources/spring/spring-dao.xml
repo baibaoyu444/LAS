@@ -16,15 +16,15 @@
     -->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init">
         <!--  注入连接属性  -->
-<!--        <property name="driverClassName" value="${mysql_driver}"/>-->
-<!--        <property name="url" value="${mysql_url}"/>-->
-<!--        <property name="username" value="${mysql_username}"/>-->
-<!--        <property name="password" value="${mysql_password}"/>-->
+        <property name="driverClassName" value="${mysql_driver}"/>
+        <property name="url" value="${mysql_url}"/>
+        <property name="username" value="${mysql_username}"/>
+        <property name="password" value="${mysql_password}"/>
 
-        <property name="driverClassName" value="${test_driver}"/>
-        <property name="url" value="${test_url}"/>
-        <property name="username" value="${test_username}"/>
-        <property name="password" value="${test_password}"/>
+<!--        <property name="driverClassName" value="${test_driver}"/>-->
+<!--        <property name="url" value="${test_url}"/>-->
+<!--        <property name="username" value="${test_username}"/>-->
+<!--        <property name="password" value="${test_password}"/>-->
 
 
         <!--  初始化连接池大小  -->

@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface LaboratoryDao {
 
@@ -36,5 +37,6 @@ public interface LaboratoryDao {
     String selectNameById(Integer id) throws Exception;
 
     @Select("select id, name from laboratory")
-    HashMap<Integer, String> getLabInfo() throws Exception;
+    @MapKey("id")
+    HashMap<Integer, Map<String, Object>> getLabInfo() throws Exception;
 }

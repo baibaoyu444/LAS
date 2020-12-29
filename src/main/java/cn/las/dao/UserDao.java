@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Update;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface UserDao {
 
@@ -39,7 +40,9 @@ public interface UserDao {
             @Result(column = "username", property = "username"),
             @Result(column = "teacher", property = "teacher"),
             @Result(column = "email", property = "email"),
-            @Result(column = "phone", property = "phone")
+            @Result(column = "phone", property = "phone"),
+            @Result(column = "id", property = "role", javaType = Role.class,
+                    one = @One(select = "cn.las.dao.RoleDao.findByUserId"))
     })
     List<User> findAll() throws Exception;
 
@@ -49,7 +52,7 @@ public interface UserDao {
     @Update("update user set email=#{email}, phone=#{phone} where username=#{username}")
     void updateOne(User user) throws Exception;
 
-    @Select("select username, teacher from user where id=#{id}")
+    @Select("select * from user where id=#{id}")
     @Results({
             @Result(id = true, column = "id", property = "id"),
             @Result(column = "username", property = "username"),
@@ -68,5 +71,6 @@ public interface UserDao {
     String selectNameById(Integer id) throws Exception;
 
     @Select("select id, teacher from user")
-    HashMap<Integer, String> getUserInfo() throws Exception;
+    @MapKey("id")
+    HashMap<Integer, Map<String, Object>> getUserInfo() throws Exception;
 }
